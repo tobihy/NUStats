@@ -1,22 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./styles.css";
 
 import AppShell from "./component/AppShell";
-import PollManager from "./component/PollManager";
-import PageLogin from "./pages/PageLogin";
-
 import { useAuth } from "./hooks/AuthHook";
+import PageLogin from "./pages/PageLogin";
+import PageHome from "./pages/PageHome";
 
 export default function App() {
   const auth = useAuth();
   const user = auth.user;
 
   return (
-    <div className="App">
+    <div className="Bg">
       <AppShell />
-      <div className="Body" style={{ maxWidth: "64rem", margin: "0 auto" }}>
-        {user ? <PollManager /> : <PageLogin />}
-      </div>
+      <div className="App">{!user ? <PageLogin /> : <PageHome />}</div>
     </div>
   );
 }

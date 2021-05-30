@@ -1,0 +1,31 @@
+.logo {
+  width: 50%;
+}
+
+.table {
+  width: 100%;
+}
+
+.paper {
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.field {
+  width: 80%;
+}
+
+.button {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.wrapper {
+  padding-top: 1.5rem;
+}
+
+.polls {
+  white-space: "pre-wrap";
+  overflow-wrap: "break-word";
+  width: 90vw;
+}

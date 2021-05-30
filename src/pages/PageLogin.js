@@ -7,6 +7,7 @@ import "firebase/auth";
 
 import { useAuth } from "../hooks/AuthHook";
 import "../styles.css";
+import styles from "./PageLogin.module.css";
 
 function PageLogin() {
   // Handler for Google sign in
@@ -20,7 +21,7 @@ function PageLogin() {
     <>
       <h1>Welcome to</h1>
       <div className="Logo">
-        <NUStatsLogo />
+        <NUStatsLogo className={styles.logo} />
       </div>
       <Button variant="contained" color="primary" onClick={() => auth.signin()}>
         Sign in with Google
