@@ -2,16 +2,12 @@ import React, { useState, useEffect } from "react";
 import Poll from "../Poll";
 import { Button, Paper, TextField } from "@material-ui/core";
 import styles from "./PollManager.module.css";
+import { firebase } from "@firebase/app";
 
 export default function PollManager(props) {
-  const { editPoll, polls, setPolls, setSubmittedPolls } = props;
+  const { editPoll, polls, setPolls, submittedPolls, setSubmittedPolls } =
+    props;
   const [newPoll, setNewPoll] = useState("");
-
-  /* Ensure that polls are auto saved and auto loaded */
-  useEffect(() => {
-    const savedPolls = JSON.parse(window.localStorage.getItem("polls"));
-    setPolls(savedPolls || []);
-  }, []);
 
   /* Adding polls */
   function handleAddPoll(event) {
@@ -30,7 +26,6 @@ export default function PollManager(props) {
     ];
     setPolls(newPolls);
     setNewPoll("");
-    window.localStorage.setItem("polls", JSON.stringify(newPolls));
   }
 
   return (
@@ -55,10 +50,10 @@ export default function PollManager(props) {
 
       <div>
         <table className={styles.table}>
-          <nobr>
-            {polls.map((poll, index) => (
+          {polls &&
+            polls.map((poll, index) => (
               <tr key={index}>
-                <Paper key={poll.index} elevation={3} className={styles.paper}>
+                <Paper key={index} elevation={3} className={styles.paper}>
                   <td className={styles.polls}>
                     <Poll
                       polls={polls}
@@ -66,13 +61,13 @@ export default function PollManager(props) {
                       pollId={index}
                       editPoll={editPoll}
                       setPolls={setPolls}
+                      submittedPolls={submittedPolls}
                       setSubmittedPolls={setSubmittedPolls}
                     />
                   </td>
                 </Paper>
               </tr>
             ))}
-          </nobr>
         </table>
       </div>
     </div>

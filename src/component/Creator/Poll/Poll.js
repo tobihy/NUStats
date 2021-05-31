@@ -1,24 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField } from "@material-ui/core";
 import styles from "./Poll.module.css";
 import ClearIcon from "@material-ui/icons/Clear";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import PublishIcon from "@material-ui/icons/Publish";
+import { firebase } from "@firebase/app";
 
 function Poll(props) {
-  const { editPoll, poll, polls, pollId, setPolls, setSubmittedPolls } = props;
+  const {
+    editPoll,
+    poll,
+    polls,
+    pollId,
+    setPolls,
+    submittedPolls,
+    setSubmittedPolls,
+  } = props;
   const [question, setQuestion] = useState(poll.description);
   const [options, setOptions] = useState(poll.options);
   const [newOptionText, setNewOptionText] = useState("");
   const [optionToDelete, setOptionToDelete] = useState();
 
   /* Handle Poll functions (Delete, Edit (Rename), Submit) */
-  function handleDeletePoll() {
+  function handleDeletePoll(event) {
     const newPolls = polls.filter((i) => i.id !== pollId);
     newPolls.forEach((p, index) => (p.id = index));
     setPolls(newPolls);
-    window.localStorage.setItem("polls", JSON.stringify(newPolls));
   }
 
   function handleEditPoll(event, qns) {
@@ -28,13 +36,10 @@ function Poll(props) {
   }
 
   function handleSubmitPoll() {
-    const savedSubmittedPolls =
-      JSON.parse(window.localStorage.getItem("submittedPolls")) || [];
-
     const newSubmittedPolls = [
-      ...savedSubmittedPolls,
+      ...submittedPolls,
       {
-        id: savedSubmittedPolls.length,
+        id: submittedPolls.length,
         description: question,
         options: options,
         responses: [],
@@ -43,11 +48,6 @@ function Poll(props) {
     setSubmittedPolls(newSubmittedPolls);
     const newPolls = [...polls.slice(0, pollId), ...polls.slice(pollId + 1)];
     setPolls(newPolls);
-    window.localStorage.setItem(
-      "submittedPolls",
-      JSON.stringify(newSubmittedPolls)
-    );
-    window.localStorage.setItem("polls", JSON.stringify(newPolls));
     window.location.reload();
   }
 

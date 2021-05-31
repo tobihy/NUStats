@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/firestore";
 
 // NUStats Firebase credentials
 firebase.initializeApp({
@@ -100,7 +101,7 @@ function useProvideAuth() {
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   // Return the user object and auth methods
   return {
@@ -112,3 +113,5 @@ function useProvideAuth() {
     confirmPasswordReset,
   };
 }
+
+export default firebase;

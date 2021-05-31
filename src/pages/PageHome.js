@@ -23,6 +23,7 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import { firebase } from "@firebase/app";
 
 function PageHome() {
   const [polls, setPolls] = useState([]);
@@ -33,6 +34,49 @@ function PageHome() {
   function toggleDrawer() {
     setDrawer(!drawer);
   }
+  useEffect(() => {
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    const docRef = db.collection("polls").doc(uid);
+
+    docRef.get().then((doc) => {
+      console.log("polls retrieved");
+      if (doc.exists) {
+        setPolls(doc.data().polls);
+      } else {
+        setPolls([]);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    const docRef = db.collection("userPolls").doc(uid);
+
+    docRef.get().then((doc) => {
+      console.log("userPolls retrieved");
+      if (doc.exists) {
+        setUserPolls(doc.data().userPolls);
+      } else {
+        setUserPolls([]);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const db = firebase.firestore();
+    const docRef = db.collection("submittedPolls").doc("globalId");
+
+    docRef.get().then((doc) => {
+      console.log("submittedPolls retrieved");
+      if (doc.exists) {
+        setSubmittedPolls(doc.data().submittedPolls);
+      } else {
+        setSubmittedPolls([]);
+      }
+    });
+  }, []);
 
   function editPoll(description, options, pollId) {
     const newPolls = [
@@ -45,44 +89,71 @@ function PageHome() {
       ...polls.slice(pollId + 1),
     ];
     setPolls(newPolls);
-    window.localStorage.setItem("polls", JSON.stringify(newPolls));
   }
 
   useEffect(() => {
-    const savedPolls = JSON.parse(window.localStorage.getItem("polls"));
-    const savedSubmittedPolls = JSON.parse(
-      window.localStorage.getItem("submittedPolls")
-    );
     const savedUserPolls = JSON.parse(window.localStorage.getItem("userPolls"));
-    setPolls(savedPolls || []);
-    setSubmittedPolls(savedSubmittedPolls || []);
     setUserPolls(savedUserPolls || []);
   }, []);
 
   useEffect(() => {
-    const savedSubmittedPolls = JSON.parse(
-      window.localStorage.getItem("submittedPolls")
-    );
-    const savedUserPolls = JSON.parse(window.localStorage.getItem("userPolls"));
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    db.collection("polls")
+      .doc(uid)
+      .set({ polls: polls })
+      .then(() => {
+        console.log("Document successfully written!");
+      })
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+      });
+  }, [polls]);
+
+  useEffect(() => {
+    const db = firebase.firestore();
+    db.collection("submittedPolls")
+      .doc("globalId")
+      .set({ submittedPolls: submittedPolls })
+      .then(() => {
+        console.log("submittedPolls set!");
+      })
+      .catch((error) => {
+        console.error("summittedPolls error: ", error);
+      });
+  }, [submittedPolls]);
+
+  useEffect(() => {
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    db.collection("userPolls")
+      .doc(uid)
+      .set({ userPolls: userPolls })
+      .then(() => {
+        console.log("userPolls set!");
+      })
+      .catch((error) => {
+        console.error("userPolls error: ", error);
+      });
+  }, [userPolls]);
+
+  useEffect(() => {
     const delta =
-      savedSubmittedPolls &&
-      savedSubmittedPolls.slice(
-        savedUserPolls === null ? 0 : savedUserPolls.length
-      );
+      submittedPolls &&
+      submittedPolls.slice(userPolls === null ? 0 : userPolls.length);
     delta &&
       delta.forEach((i) => {
         i.completed = false;
-        i.responses = -1;
+        i.responses = [];
       });
     const newUserPolls =
       delta === null
         ? []
-        : savedUserPolls === null
+        : userPolls === null
         ? [...delta]
-        : [...savedUserPolls, ...delta];
-    setUserPolls(newUserPolls || savedUserPolls);
-    window.localStorage.setItem("userPolls", JSON.stringify(newUserPolls));
-  }, []);
+        : [...userPolls, ...delta];
+    setUserPolls(newUserPolls || userPolls);
+  }, [submittedPolls]);
 
   return (
     <BrowserRouter>

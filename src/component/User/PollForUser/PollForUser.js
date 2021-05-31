@@ -34,7 +34,6 @@ function UserPoll(props) {
       newPoll,
       ...userPolls.slice(pollId + 1),
     ];
-    window.localStorage.setItem("userPolls", JSON.stringify(newUserPolls));
     setUserPolls(newUserPolls);
 
     const savedPoll = submittedPolls[pollId];
@@ -54,10 +53,6 @@ function UserPoll(props) {
       ...submittedPolls.slice(pollId + 1),
     ];
     setSubmittedPolls(newSubmittedPolls);
-    window.localStorage.setItem(
-      "submittedPolls",
-      JSON.stringify(newSubmittedPolls)
-    );
     setUserPolls(newUserPolls);
   }
 

@@ -1,7 +1,6 @@
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import ReactDOM from "react-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
-
 import App from "./App";
 import { ProvideAuth } from "./hooks/AuthHook";
 
