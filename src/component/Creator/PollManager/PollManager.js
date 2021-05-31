@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Poll from "../Poll";
 import { Button, Paper, TextField } from "@material-ui/core";
 import styles from "./PollManager.module.css";
-import { firebase } from "@firebase/app";
 
 export default function PollManager(props) {
   const { editPoll, polls, setPolls, submittedPolls, setSubmittedPolls } =

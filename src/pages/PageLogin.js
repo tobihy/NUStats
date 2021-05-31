@@ -2,7 +2,6 @@ import React from "react";
 import { Button } from "@material-ui/core";
 import { ReactComponent as NUStatsLogo } from "../graphics/logo.svg";
 
-import firebase from "firebase/app";
 import "firebase/auth";
 
 import { useAuth } from "../hooks/AuthHook";

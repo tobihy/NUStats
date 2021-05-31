@@ -18,6 +18,7 @@ function UserPoll(props) {
     setSubmittedPolls,
   } = props;
   const [value, setValue] = useState(poll.responses);
+  // eslint-disable-next-line
   const [completed, setCompleted] = useState(poll.completed);
 
   const handleChange = (event) => {

@@ -16,6 +16,7 @@ import {
 } from "@material-ui/core";
 
 import {
+  // eslint-disable-next-line
   BrowserRouter as Router,
   Switch,
   Route,
@@ -153,6 +154,7 @@ function PageHome() {
         ? [...delta]
         : [...userPolls, ...delta];
     setUserPolls(newUserPolls || userPolls);
+    // eslint-disable-next-line
   }, [submittedPolls]);
 
   return (
@@ -172,6 +174,7 @@ function PageHome() {
                   key={text}
                   component={Link}
                   to={"/" + text.replace(/ /g, "")}
+                  onClick={toggleDrawer}
                 >
                   <ListItemIcon>
                     {index === 0 ? (
