@@ -2,3 +2,7 @@
   width: 50vw;
   margin-bottom: 1rem;
 }
+
+.clickable {
+  cursor: pointer;
+}
