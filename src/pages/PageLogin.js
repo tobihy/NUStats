@@ -1,10 +1,11 @@
 import React from "react";
-import { Button } from "@material-ui/core";
+import GoogleButton from "react-google-button";
 import { ReactComponent as NUStatsLogo } from "../graphics/logo.svg";
 
 import "firebase/auth";
 
-import { useAuth } from "../hooks/AuthHook";
+import { useAuth } from "../auth/AuthHook";
+
 import "../styles.css";
 import styles from "./PageLogin.module.css";
 
@@ -17,15 +18,17 @@ function PageLogin() {
   const auth = useAuth();
 
   return (
-    <>
+    <body>
       <h1>Welcome to</h1>
-      <div className="Logo">
-        <NUStatsLogo className={styles.logo} />
+      <div className={styles.logo}>
+        <NUStatsLogo />
       </div>
-      <Button variant="contained" color="primary" onClick={() => auth.signin()}>
-        Sign in with Google
-      </Button>
-    </>
+      <GoogleButton
+        className={styles.loginButton}
+        type="dark"
+        onClick={() => auth.signin()}
+      />
+    </body>
   );
 }
 

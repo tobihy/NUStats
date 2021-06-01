@@ -4,6 +4,7 @@ import Previewer from "../component/Creator/Previewer";
 import NavBar from "../component/NavBar";
 import CompletedPolls from "../component/User/CompletedPolls";
 import UncompletedPolls from "../component/User/UncompletedPolls";
+import HomeIcon from "@material-ui/icons/Home";
 import CreateIcon from "@material-ui/icons/Create";
 import PollOutlinedIcon from "@material-ui/icons/PollOutlined";
 import AssignmentTurnedInOutlinedIcon from "@material-ui/icons/AssignmentTurnedInOutlined";
@@ -35,6 +36,7 @@ function PageHome() {
   function toggleDrawer() {
     setDrawer(!drawer);
   }
+
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
@@ -157,37 +159,46 @@ function PageHome() {
     // eslint-disable-next-line
   }, [submittedPolls]);
 
+  // List objects
+  const home = { id: "Home", icon: <HomeIcon /> };
+  const pollCreator = { id: "Poll Creator", icon: <CreateIcon /> };
+  const pollPreviewer = { id: "Poll Previewer", icon: <VisibilityIcon /> };
+  const uncompletedPolls = {
+    id: "Uncompleted Polls",
+    icon: <PollOutlinedIcon />,
+  };
+  const completedPolls = {
+    id: "Completed Polls",
+    icon: <AssignmentTurnedInOutlinedIcon />,
+  };
+
+  const menuItems = [
+    home,
+    pollCreator,
+    pollPreviewer,
+    uncompletedPolls,
+    completedPolls,
+  ];
+
   return (
     <BrowserRouter>
       <main>
         <NavBar toggleDrawer={toggleDrawer} />
         <div>
           <SwipeableDrawer anchor="left" open={drawer} onClose={toggleDrawer}>
-            <List>
-              {[
-                "Poll Creator",
-                "Poll Previewer",
-                "Uncompleted Polls",
-                "Completed Polls",
-              ].map((text, index) => (
+            <List style={{ width: "275px" }}>
+              {menuItems.map((mItem) => (
                 <ListItem
-                  key={text}
+                  key={mItem.id}
                   component={Link}
-                  to={"/" + text.replace(/ /g, "")}
+                  to={"/" + mItem.id.replace(/ /g, "")}
                   onClick={toggleDrawer}
                 >
-                  <ListItemIcon>
-                    {index === 0 ? (
-                      <CreateIcon />
-                    ) : index === 1 ? (
-                      <VisibilityIcon />
-                    ) : index === 2 ? (
-                      <PollOutlinedIcon />
-                    ) : (
-                      <AssignmentTurnedInOutlinedIcon />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
+                  <ListItemIcon>{mItem.icon}</ListItemIcon>
+                  <ListItemText
+                    primary={mItem.id}
+                    style={{ color: "#2c387e" }}
+                  />
                 </ListItem>
               ))}
             </List>

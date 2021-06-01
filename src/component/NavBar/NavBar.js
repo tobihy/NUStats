@@ -11,7 +11,7 @@ import {
 import MenuIcon from "@material-ui/icons/Menu";
 import { ReactComponent as ReactLogo } from "../../graphics/logo.svg";
 import styles from "./NavBar.module.css";
-import { useAuth } from "../../hooks/AuthHook";
+import { useAuth } from "../../auth/AuthHook";
 
 function NavBar(props) {
   const { toggleDrawer } = props;
@@ -36,7 +36,7 @@ function NavBar(props) {
 
   return user !== null ? (
     <div>
-      <AppBar position="fixed">
+      <AppBar position="static">
         <Toolbar>
           <IconButton color="inherit" onClick={toggleDrawer}>
             <MenuIcon />

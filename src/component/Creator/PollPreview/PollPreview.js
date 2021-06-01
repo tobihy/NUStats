@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FormControlLabel, Radio, RadioGroup } from "@material-ui/core";
+import Rectangle from "../../UI/Rectangle/Rectangle";
 import styles from "./PollPreview.module.css";
 
 function PollPreview(props) {
@@ -10,7 +11,7 @@ function PollPreview(props) {
   };
 
   return (
-    <div>
+    <Rectangle>
       <h3 className={styles.qns}>{poll.description}</h3>
       <table className={styles.table}>
         <RadioGroup
@@ -32,7 +33,7 @@ function PollPreview(props) {
           ))}
         </RadioGroup>
       </table>
-    </div>
+    </Rectangle>
   );
 }
 

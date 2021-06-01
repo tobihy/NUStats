@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Poll from "../Poll";
-import { Button, Paper, TextField } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
+import Rectangle from "../../UI/Rectangle/Rectangle";
 import styles from "./PollManager.module.css";
 
 export default function PollManager(props) {
@@ -30,29 +31,25 @@ export default function PollManager(props) {
   return (
     <div className={styles.wrapper}>
       <h1>Polls Creator</h1>
-      <Paper elevation={3} className={styles.paper}>
-        <nobr>
-          <form onSubmit={handleAddPoll} className={styles.forms}>
-            <TextField
-              className={styles.field}
-              label="Poll"
-              value={newPoll}
-              onChange={(event) => setNewPoll(event.target.value)}
-            />
-
-            <Button type="submit" variant="contained" color="primary">
-              Add Poll
-            </Button>
-          </form>
-        </nobr>
-      </Paper>
-
+      <Rectangle>
+        <form onSubmit={handleAddPoll} className={styles.forms}>
+          <TextField
+            className={styles.field}
+            label="Poll"
+            value={newPoll}
+            onChange={(event) => setNewPoll(event.target.value)}
+          />
+          <Button type="submit" variant="contained" color="primary">
+            Add Poll
+          </Button>
+        </form>
+      </Rectangle>
       <div>
         <table className={styles.table}>
           {polls &&
             polls.map((poll, index) => (
               <tr key={index}>
-                <Paper key={index} elevation={3} className={styles.paper}>
+                <Rectangle>
                   <td className={styles.polls}>
                     <Poll
                       polls={polls}
@@ -64,7 +61,7 @@ export default function PollManager(props) {
                       setSubmittedPolls={setSubmittedPolls}
                     />
                   </td>
-                </Paper>
+                </Rectangle>
               </tr>
             ))}
         </table>

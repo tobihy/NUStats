@@ -29,3 +29,18 @@
   overflow-wrap: "break-word";
   width: 90vw;
 }
+
+.forms {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 2rem;
+}
+
+form .field {
+  margin: 0 1rem;
+}
+
+.paper {
+  margin: 0 5rem;
+}

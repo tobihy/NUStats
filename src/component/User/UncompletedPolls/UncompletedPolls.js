@@ -1,7 +1,7 @@
 import React from "react";
-import { Paper } from "@material-ui/core";
 import UserPoll from "../PollForUser";
 import styles from "./UncompletedPolls.module.css";
+import Rectangle from "../../UI/Rectangle/Rectangle";
 
 function UncompletedPolls(props) {
   const { userPolls, setUserPolls, submittedPolls, setSubmittedPolls } = props;
@@ -12,7 +12,7 @@ function UncompletedPolls(props) {
       {userPolls
         .filter((i) => !i.completed)
         .map((poll) => (
-          <Paper key={poll.id} elevation={3}>
+          <Rectangle>
             <UserPoll
               setUserPolls={setUserPolls}
               poll={poll}
@@ -21,7 +21,7 @@ function UncompletedPolls(props) {
               setSubmittedPolls={setSubmittedPolls}
               submittedPolls={submittedPolls}
             />
-          </Paper>
+          </Rectangle>
         ))}
     </div>
   );
