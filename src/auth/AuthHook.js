@@ -45,7 +45,6 @@ function useProvideAuth() {
         return response.user;
       });
   };
-
   // Unused
   const signup = (email, password) => {
     return firebase

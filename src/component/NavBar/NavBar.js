@@ -35,33 +35,31 @@ function NavBar(props) {
   };
 
   return user !== null ? (
-    <div>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton color="inherit" onClick={toggleDrawer}>
-            <MenuIcon />
-          </IconButton>
-          <ReactLogo className={styles.logo} />
-          <Avatar
-            className={styles.clickable}
-            alt={user.displayName}
-            src={user.photoURL}
-            aria-controls="simple-menu"
-            aria-haspopup="true"
-            onClick={handleClick}
-          />
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
-    </div>
+    <AppBar position="static">
+      <Toolbar>
+        <IconButton color="inherit" onClick={toggleDrawer}>
+          <MenuIcon />
+        </IconButton>
+        <ReactLogo className={styles.logo} />
+        <Avatar
+          className={styles.clickable}
+          alt={user.displayName}
+          src={user.photoURL}
+          aria-controls="simple-menu"
+          aria-haspopup="true"
+          onClick={handleClick}
+        />
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>
+      </Toolbar>
+    </AppBar>
   ) : (
     <AppBar position="static">
       <Toolbar>

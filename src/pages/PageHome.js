@@ -4,10 +4,12 @@ import Previewer from "../component/Creator/Previewer";
 import NavBar from "../component/NavBar";
 import CompletedPolls from "../component/User/CompletedPolls";
 import UncompletedPolls from "../component/User/UncompletedPolls";
+import Dashboard from "../component/Dashboard";
 import HomeIcon from "@material-ui/icons/Home";
 import CreateIcon from "@material-ui/icons/Create";
 import PollOutlinedIcon from "@material-ui/icons/PollOutlined";
 import AssignmentTurnedInOutlinedIcon from "@material-ui/icons/AssignmentTurnedInOutlined";
+import { Divider } from "@material-ui/core";
 import {
   List,
   ListItem,
@@ -46,8 +48,6 @@ function PageHome() {
       console.log("polls retrieved");
       if (doc.exists) {
         setPolls(doc.data().polls);
-      } else {
-        setPolls([]);
       }
     });
   }, []);
@@ -61,8 +61,6 @@ function PageHome() {
       console.log("userPolls retrieved");
       if (doc.exists) {
         setUserPolls(doc.data().userPolls);
-      } else {
-        setUserPolls([]);
       }
     });
   }, []);
@@ -75,8 +73,6 @@ function PageHome() {
       console.log("submittedPolls retrieved");
       if (doc.exists) {
         setSubmittedPolls(doc.data().submittedPolls);
-      } else {
-        setSubmittedPolls([]);
       }
     });
   }, []);
@@ -93,25 +89,6 @@ function PageHome() {
     ];
     setPolls(newPolls);
   }
-
-  useEffect(() => {
-    const savedUserPolls = JSON.parse(window.localStorage.getItem("userPolls"));
-    setUserPolls(savedUserPolls || []);
-  }, []);
-
-  useEffect(() => {
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    db.collection("polls")
-      .doc(uid)
-      .set({ polls: polls })
-      .then(() => {
-        console.log("Document successfully written!");
-      })
-      .catch((error) => {
-        console.error("Error writing document: ", error);
-      });
-  }, [polls]);
 
   useEffect(() => {
     const db = firebase.firestore();
@@ -141,6 +118,20 @@ function PageHome() {
   }, [userPolls]);
 
   useEffect(() => {
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    db.collection("polls")
+      .doc(uid)
+      .set({ polls: polls })
+      .then(() => {
+        console.log("Document successfully written!");
+      })
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+      });
+  }, [polls]);
+
+  useEffect(() => {
     const delta =
       submittedPolls &&
       submittedPolls.slice(userPolls === null ? 0 : userPolls.length);
@@ -160,7 +151,7 @@ function PageHome() {
   }, [submittedPolls]);
 
   // List objects
-  const home = { id: "Home", icon: <HomeIcon /> };
+  const home = { id: "Dashboard", icon: <HomeIcon /> };
   const pollCreator = { id: "Poll Creator", icon: <CreateIcon /> };
   const pollPreviewer = { id: "Poll Previewer", icon: <VisibilityIcon /> };
   const uncompletedPolls = {
@@ -188,18 +179,21 @@ function PageHome() {
           <SwipeableDrawer anchor="left" open={drawer} onClose={toggleDrawer}>
             <List style={{ width: "275px" }}>
               {menuItems.map((mItem) => (
-                <ListItem
-                  key={mItem.id}
-                  component={Link}
-                  to={"/" + mItem.id.replace(/ /g, "")}
-                  onClick={toggleDrawer}
-                >
-                  <ListItemIcon>{mItem.icon}</ListItemIcon>
-                  <ListItemText
-                    primary={mItem.id}
-                    style={{ color: "#2c387e" }}
-                  />
-                </ListItem>
+                <>
+                  <ListItem
+                    key={mItem.id}
+                    component={Link}
+                    to={"/" + mItem.id.replace(/ /g, "")}
+                    onClick={toggleDrawer}
+                  >
+                    <ListItemIcon>{mItem.icon}</ListItemIcon>
+                    <ListItemText
+                      primary={mItem.id}
+                      style={{ color: "#2c387e" }}
+                    />
+                  </ListItem>
+                  <Divider />
+                </>
               ))}
             </List>
           </SwipeableDrawer>
@@ -210,7 +204,20 @@ function PageHome() {
             exact
             path="/"
             render={() => (
-              <PollManager
+              <Dashboard
+                polls={polls}
+                setPolls={setPolls}
+                editPoll={editPoll}
+                submittedPolls={submittedPolls}
+                setSubmittedPolls={setSubmittedPolls}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/Dashboard"
+            render={() => (
+              <Dashboard
                 polls={polls}
                 setPolls={setPolls}
                 editPoll={editPoll}
