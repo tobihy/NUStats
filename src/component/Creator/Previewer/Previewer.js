@@ -10,6 +10,7 @@ function Previewer(props) {
       <h1>Polls Previewer</h1>
       {polls.map((poll, index) => (
         <PollPreview
+          key={poll.id}
           polls={polls}
           poll={poll}
           pollId={index}

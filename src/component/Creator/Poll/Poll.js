@@ -5,6 +5,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
 import PublishIcon from "@material-ui/icons/Publish";
+import GridPoll from "../../UI/GridPoll";
 
 function Poll(props) {
   const {
@@ -97,118 +98,104 @@ function Poll(props) {
   }
 
   return (
-    <div>
-      <div className={styles.wrapper}>
-        <table className={styles.table}>
-          <tr key={pollId + "question"} className={styles.optionDesc}>
-            <td className={styles.table}>
-              <TextField
-                className={styles.field}
-                label={"Poll " + (pollId + 1)}
-                value={question}
-                variant="outlined"
-                fullWidth
-                onChange={(event) =>
-                  handleEditPoll(
-                    event,
-                    event.target.value || "Poll " + (pollId + 1)
-                  )
-                }
-              />
-            </td>
-            <td>
-              <form onSubmit={handleDeletePoll}>
-                <IconButton
-                  aria-label="delete"
-                  type="submit"
-                  size="small"
-                  className={styles.icon}
-                  color="secondary"
-                >
-                  <ClearIcon size="big" />
-                </IconButton>
-              </form>
-              <form onSubmit={handleSubmitPoll}>
-                <IconButton
-                  aria-label="delete"
-                  type="submit"
-                  size="small"
-                  className={styles.icon}
-                  color="secondary"
-                >
-                  <PublishIcon size="big" />
-                </IconButton>
-              </form>
-            </td>
-          </tr>
-          {options.map((option) => (
-            <tr key={option.id} className={styles.table}>
-              <div key={option.id} className={styles.table}>
-                <td className={styles.table}>
-                  <TextField
-                    className={styles.field}
-                    size="small"
-                    label={"Option " + (option.id + 1)}
-                    fullWidth
-                    value={option.description}
-                    onChange={(event) => {
-                      handleEditOption(event, {
-                        id: option.id,
-                        description:
-                          event.target.value || "Option " + (option.id + 1),
-                      });
-                    }}
-                  />
-                </td>
-                <td>
-                  <form onSubmit={handleDeleteOption} className={styles.forms}>
-                    <IconButton
-                      aria-label="delete"
-                      type="submit"
-                      size="small"
-                      className={styles.icon}
-                      onClick={() => setOptionToDelete(option)}
-                    >
-                      <ClearIcon size="big" />
-                    </IconButton>
-                  </form>
-                </td>
-              </div>
-            </tr>
-          ))}
-          <tr key="addOpt" className={styles.optionDesc}>
-            <div key="addOpt" className={styles.table}>
-              <nobr>
-                <form
-                  onSubmit={handleAddOption}
-                  className={styles.forms}
-                  nowrap
-                >
-                  <td className={styles.table}>
-                    <TextField
-                      className={styles.field}
-                      size="small"
-                      label="Add Option"
-                      fullWidth
-                      value={newOptionText}
-                      onChange={(event) => setNewOptionText(event.target.value)}
-                    />
-                    <IconButton
-                      aria-label="add"
-                      type="submit"
-                      size="small"
-                      className={styles.icon}
-                    >
-                      <AddIcon size="big" />
-                    </IconButton>
-                  </td>
-                </form>
-              </nobr>
-            </div>
-          </tr>
-        </table>
-      </div>
-    </div>
+    <>
+      <GridPoll
+        textField={
+          <TextField
+            className={styles.field}
+            label={"Poll " + (pollId + 1)}
+            value={question}
+            variant="outlined"
+            fullWidth
+            onChange={(event) =>
+              handleEditPoll(
+                event,
+                event.target.value || "Poll " + (pollId + 1)
+              )
+            }
+          />
+        }
+        button={
+          <>
+            <form onSubmit={handleSubmitPoll}>
+              <IconButton
+                aria-label="delete"
+                type="submit"
+                size="small"
+                color="primary"
+              >
+                <PublishIcon size="big" />
+              </IconButton>
+            </form>
+            <form onSubmit={handleDeletePoll}>
+              <IconButton
+                aria-label="delete"
+                type="submit"
+                size="small"
+                color="secondary"
+              >
+                <ClearIcon size="big" />
+              </IconButton>
+            </form>
+          </>
+        }
+      />
+
+      {options.map((option) => (
+        <GridPoll
+          textField={
+            <TextField
+              className={styles.field}
+              size="small"
+              label={"Option " + (option.id + 1)}
+              fullWidth
+              value={option.description}
+              onChange={(event) => {
+                handleEditOption(event, {
+                  id: option.id,
+                  description:
+                    event.target.value || "Option " + (option.id + 1),
+                });
+              }}
+            />
+          }
+          button={
+            <form onSubmit={handleDeleteOption} className={styles.forms}>
+              <IconButton
+                aria-label="delete"
+                type="submit"
+                size="small"
+                className={styles.icon}
+                onClick={() => setOptionToDelete(option)}
+              >
+                <ClearIcon size="big" />
+              </IconButton>
+            </form>
+          }
+          row={true}
+        />
+      ))}
+      <form onSubmit={handleAddOption}>
+        <GridPoll
+          textField={
+            <TextField
+              size="small"
+              label="Add Option"
+              fullWidth
+              className={styles.field}
+              value={newOptionText}
+              onChange={(event) => setNewOptionText(event.target.value)}
+            />
+          }
+          button={
+            <IconButton edge="end" aria-label="add" type="submit" size="small">
+              <AddIcon size="big" />
+            </IconButton>
+          }
+          row={true}
+        />
+      </form>
+    </>
   );
 }
 

@@ -45,8 +45,10 @@ function PageHome() {
     const docRef = db.collection("polls").doc(uid);
 
     docRef.get().then((doc) => {
-      console.log("polls retrieved");
       if (doc.exists) {
+        console.log(
+          "polls retrieved" + JSON.stringify(doc.data().polls) + " done"
+        );
         setPolls(doc.data().polls);
       }
     });
@@ -58,8 +60,10 @@ function PageHome() {
     const docRef = db.collection("userPolls").doc(uid);
 
     docRef.get().then((doc) => {
-      console.log("userPolls retrieved");
       if (doc.exists) {
+        console.log(
+          "userPolls retrieved" + JSON.stringify(doc.data().userPolls) + " done"
+        );
         setUserPolls(doc.data().userPolls);
       }
     });
@@ -70,8 +74,12 @@ function PageHome() {
     const docRef = db.collection("submittedPolls").doc("globalId");
 
     docRef.get().then((doc) => {
-      console.log("submittedPolls retrieved");
       if (doc.exists) {
+        console.log(
+          "submittedPolls retrieved" +
+            JSON.stringify(doc.data().submittedPolls) +
+            " done"
+        );
         setSubmittedPolls(doc.data().submittedPolls);
       }
     });
@@ -91,12 +99,15 @@ function PageHome() {
   }
 
   useEffect(() => {
+    //const cspoll = submittedPolls;
+    //console.log("last" + JSON.stringify(cspoll));
+    //console.log("outside submittedPolls set!: " + JSON.stringify(cspoll));
     const db = firebase.firestore();
     db.collection("submittedPolls")
       .doc("globalId")
       .set({ submittedPolls: submittedPolls })
       .then(() => {
-        console.log("submittedPolls set!");
+        console.log("submittedPolls set!: " + JSON.stringify(submittedPolls));
       })
       .catch((error) => {
         console.error("summittedPolls error: ", error);
@@ -104,13 +115,16 @@ function PageHome() {
   }, [submittedPolls]);
 
   useEffect(() => {
+    //const cupoll = userPolls;
+    //console.log("last" + JSON.stringify(cupoll));
+    //console.log("outside userPolls set!: " + JSON.stringify(cupoll));
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
     db.collection("userPolls")
       .doc(uid)
       .set({ userPolls: userPolls })
       .then(() => {
-        console.log("userPolls set!");
+        console.log("userPolls set!: " + JSON.stringify(userPolls));
       })
       .catch((error) => {
         console.error("userPolls error: ", error);
@@ -118,17 +132,22 @@ function PageHome() {
   }, [userPolls]);
 
   useEffect(() => {
+    //const cpoll = polls;
+    //console.log("last" + JSON.stringify(cpoll));
+    //console.log("outside (creator) polls set!" + JSON.stringify(cpoll));
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    db.collection("polls")
-      .doc(uid)
-      .set({ polls: polls })
-      .then(() => {
-        console.log("Document successfully written!");
-      })
-      .catch((error) => {
-        console.error("Error writing document: ", error);
-      });
+    if (polls !== []) {
+      db.collection("polls")
+        .doc(uid)
+        .set({ polls: polls })
+        .then(() => {
+          console.log("(creator) polls set!" + JSON.stringify(polls));
+        })
+        .catch((error) => {
+          console.error("(creator) polls: error", error);
+        });
+    }
   }, [polls]);
 
   useEffect(() => {
@@ -176,12 +195,16 @@ function PageHome() {
       <main>
         <NavBar toggleDrawer={toggleDrawer} />
         <div>
-          <SwipeableDrawer anchor="left" open={drawer} onClose={toggleDrawer}>
+          <SwipeableDrawer
+            anchor="left"
+            open={drawer}
+            onClose={toggleDrawer}
+            onOpen={toggleDrawer}
+          >
             <List style={{ width: "275px" }}>
               {menuItems.map((mItem) => (
-                <>
+                <div key={mItem.id}>
                   <ListItem
-                    key={mItem.id}
                     component={Link}
                     to={"/" + mItem.id.replace(/ /g, "")}
                     onClick={toggleDrawer}
@@ -193,7 +216,7 @@ function PageHome() {
                     />
                   </ListItem>
                   <Divider />
-                </>
+                </div>
               ))}
             </List>
           </SwipeableDrawer>

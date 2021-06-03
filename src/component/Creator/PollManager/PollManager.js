@@ -3,6 +3,7 @@ import Poll from "../Poll";
 import { Button, TextField } from "@material-ui/core";
 import Rectangle from "../../UI/Rectangle/Rectangle";
 import styles from "./PollManager.module.css";
+import GridPoll from "../../UI/GridPoll";
 
 export default function PollManager(props) {
   const { editPoll, polls, setPolls, submittedPolls, setSubmittedPolls } =
@@ -33,39 +34,38 @@ export default function PollManager(props) {
       <h1>Polls Creator</h1>
       <Rectangle>
         <form onSubmit={handleAddPoll} className={styles.forms}>
-          <TextField
-            className={styles.field}
-            label="Poll"
-            value={newPoll}
-            onChange={(event) => setNewPoll(event.target.value)}
+          <GridPoll
+            textField={
+              <TextField
+                className={styles.field}
+                label="Poll"
+                value={newPoll}
+                fullWidth
+                onChange={(event) => setNewPoll(event.target.value)}
+              />
+            }
+            button={
+              <Button type="submit" variant="contained" color="primary">
+                Add
+              </Button>
+            }
           />
-          <Button type="submit" variant="contained" color="primary">
-            Add Poll
-          </Button>
         </form>
       </Rectangle>
-      <div>
-        <table className={styles.table}>
-          {polls &&
-            polls.map((poll, index) => (
-              <tr key={index}>
-                <Rectangle>
-                  <td className={styles.polls}>
-                    <Poll
-                      polls={polls}
-                      poll={poll}
-                      pollId={index}
-                      editPoll={editPoll}
-                      setPolls={setPolls}
-                      submittedPolls={submittedPolls}
-                      setSubmittedPolls={setSubmittedPolls}
-                    />
-                  </td>
-                </Rectangle>
-              </tr>
-            ))}
-        </table>
-      </div>
+      {polls &&
+        polls.map((poll, index) => (
+          <Rectangle key={index}>
+            <Poll
+              polls={polls}
+              poll={poll}
+              pollId={index}
+              editPoll={editPoll}
+              setPolls={setPolls}
+              submittedPolls={submittedPolls}
+              setSubmittedPolls={setSubmittedPolls}
+            />
+          </Rectangle>
+        ))}
     </div>
   );
 }

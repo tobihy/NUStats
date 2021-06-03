@@ -59,51 +59,48 @@ function UserPoll(props) {
 
   return (
     <div>
-      <h3 className={styles.qns}>{poll.description}</h3>
+      <h2>{poll.description}</h2>
       <form onSubmit={handleSetSubmittedPolls}>
-        <table style={{ margin: "0 auto", width: "100%" }}>
-          {poll.completed ? (
-            poll.options.map((option, index) => (
-              <tr className={styles.opts}>
-                {option.description === poll.responses ? (
-                  <strong>{poll.responses}</strong>
-                ) : (
-                  option.description
-                )}
-              </tr>
-            ))
-          ) : (
-            <>
-              <RadioGroup
-                aria-label={poll.description}
-                name={poll.description}
-                value={value}
-                onChange={handleChange}
-                className={styles.opts}
-              >
-                {poll.options.map((option, index) => (
-                  <tr className={styles.opts}>
-                    <FormControlLabel
-                      className={styles.opts}
-                      value={option.description}
-                      control={<Radio />}
-                      label={option.description}
-                    />
-                  </tr>
-                ))}
-              </RadioGroup>
-              <IconButton
-                aria-label="submit"
-                type="submit"
-                size="small"
-                className={styles.icon}
-                color="secondary"
-              >
-                <DoneIcon size="big" />
-              </IconButton>
-            </>
-          )}
-        </table>
+        {poll.completed ? (
+          poll.options.map((option, index) => (
+            <div key={option.id}>
+              {option.description === poll.responses ? (
+                <strong>{poll.responses}</strong>
+              ) : (
+                option.description
+              )}
+            </div>
+          ))
+        ) : (
+          <>
+            <RadioGroup
+              aria-label={poll.description}
+              name={poll.description}
+              value={value}
+              onChange={handleChange}
+              className={styles.opts}
+            >
+              {poll.options.map((option, index) => (
+                <FormControlLabel
+                  key={option.id}
+                  className={styles.opts}
+                  value={option.description}
+                  control={<Radio />}
+                  label={option.description}
+                />
+              ))}
+            </RadioGroup>
+            <IconButton
+              aria-label="submit"
+              type="submit"
+              size="small"
+              className={styles.icon}
+              color="secondary"
+            >
+              <DoneIcon size="big" />
+            </IconButton>
+          </>
+        )}
       </form>
     </div>
   );

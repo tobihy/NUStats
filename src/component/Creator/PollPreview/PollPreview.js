@@ -12,27 +12,24 @@ function PollPreview(props) {
 
   return (
     <Rectangle>
-      <h3 className={styles.qns}>{poll.description}</h3>
-      <table className={styles.table}>
-        <RadioGroup
-          aria-label={poll.description}
-          name={poll.description}
-          value={value}
-          onChange={handleChange}
-          className={styles.opts}
-        >
-          {poll.options.map((option) => (
-            <tr className={styles.opts}>
-              <FormControlLabel
-                className={styles.opts}
-                value={option.description}
-                control={<Radio />}
-                label={option.description}
-              />
-            </tr>
-          ))}
-        </RadioGroup>
-      </table>
+      <h2 className={styles.qns}>{poll.description}</h2>
+      <RadioGroup
+        aria-label={poll.description}
+        name={poll.description}
+        value={value}
+        onChange={handleChange}
+        className={styles.opts}
+      >
+        {poll.options.map((option) => (
+          <FormControlLabel
+            key={option.id}
+            className={styles.opts}
+            value={option.description}
+            control={<Radio />}
+            label={option.description}
+          />
+        ))}
+      </RadioGroup>
     </Rectangle>
   );
 }

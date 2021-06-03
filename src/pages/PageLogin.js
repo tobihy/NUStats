@@ -18,7 +18,7 @@ function PageLogin() {
   const auth = useAuth();
 
   return (
-    <body>
+    <main>
       <h1>Welcome to</h1>
       <div className={styles.logo}>
         <NUStatsLogo />
@@ -28,7 +28,7 @@ function PageLogin() {
         type="dark"
         onClick={() => auth.signin()}
       />
-    </body>
+    </main>
   );
 }
 

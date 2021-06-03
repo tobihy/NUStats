@@ -10,21 +10,14 @@
 
 .field {
   width: 100%;
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
-
-.forms {
-  align-items: center;
-  justify-content: center;
-}
-
-.icon {
-  margin: 1rem 0 0 0;
 }
 
 .wrapper {
   padding: 1rem;
   width: 100%;
   display: table;
+}
+
+.row {
+  padding-top: 1rem;
 }

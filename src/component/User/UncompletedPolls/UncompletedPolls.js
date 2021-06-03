@@ -12,7 +12,7 @@ function UncompletedPolls(props) {
       {userPolls
         .filter((i) => !i.completed)
         .map((poll) => (
-          <Rectangle>
+          <Rectangle key={poll.id}>
             <UserPoll
               setUserPolls={setUserPolls}
               poll={poll}
