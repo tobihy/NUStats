@@ -1,5 +1,9 @@
 # NUStats
 
+<a href="https://drive.google.com/file/d/1IqatGDD48L9kQP54YiurZlCv4GjSoW3g/view?usp=sharing">Link to detailed README file</a>
+
+<strong>Summary</strong>
+
 A platform for data collection and collation.
 
 There are always numerous messages on unofficial NUS telegram chat groups asking for people to participate in their survey for their projects.
