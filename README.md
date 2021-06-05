@@ -1,6 +1,13 @@
 # NUStats
 
 <a href="https://drive.google.com/file/d/1IqatGDD48L9kQP54YiurZlCv4GjSoW3g/view?usp=sharing">Link to detailed README file</a>
+<<<<<<< HEAD
+=======
+
+<strong>Summary</strong>
+
+A platform for data collection and collation.
+>>>>>>> 82b75d1a85d339b803767ddc7b754427f0bc74ee
 
 ![NUStats Logo](src/graphics/logo.png)
 
