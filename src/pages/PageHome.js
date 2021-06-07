@@ -27,7 +27,7 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import VisibilityIcon from "@material-ui/icons/Visibility";
-import { firebase } from "@firebase/app";
+import firebase from "../auth/AuthHook";
 
 function PageHome() {
   const [polls, setPolls] = useState([]);
@@ -42,132 +42,84 @@ function PageHome() {
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    const docRef = db.collection("polls").doc(uid);
+    const pollsRef = db.collection("polls").doc(uid);
+    const userPollsRef = db.collection("userPolls").doc(uid);
+    const submittedPollsRef = db.collection("submittedPolls").doc("globalId");
 
-    docRef.get().then((doc) => {
+    var sp = [];
+    var up = [];
+
+    pollsRef.get().then((doc) => {
       if (doc.exists) {
         console.log(
-          "polls retrieved" + JSON.stringify(doc.data().polls) + " done"
+          "polls retrieved" + JSON.stringify(doc.data().polls || []) + " done"
         );
-        setPolls(doc.data().polls);
+        setPolls(doc.data().polls || []);
       }
     });
+
+    userPollsRef.get().then((doc) => {
+      if (doc.exists) {
+        up = doc.data().userPolls || [];
+        console.log("userPolls retrieved" + JSON.stringify(up) + " done");
+        setUserPolls(up);
+      }
+    });
+
+    submittedPollsRef.get().then((doc) => {
+      if (doc.exists) {
+        sp = doc.data().submittedPolls || [];
+        console.log("submittedPolls retrieved" + JSON.stringify(sp) + " done");
+        setSubmittedPolls(sp);
+      }
+    });
+    // .then(() => refreshUserPoll(up, sp));
+    //eslint-disable-next-line
   }, []);
 
-  useEffect(() => {
+  const updatePoll = (p) => {
+    setPolls(p);
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    const docRef = db.collection("userPolls").doc(uid);
+    db.collection("polls")
+      .doc(uid)
+      .set({ polls: p })
+      .then(() => {
+        console.log("(creator) polls set!" + JSON.stringify(p));
+      })
+      .catch((error) => {
+        console.error("(creator) polls: error", error);
+      });
+  };
 
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        console.log(
-          "userPolls retrieved" + JSON.stringify(doc.data().userPolls) + " done"
-        );
-        setUserPolls(doc.data().userPolls);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    const db = firebase.firestore();
-    const docRef = db.collection("submittedPolls").doc("globalId");
-
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        console.log(
-          "submittedPolls retrieved" +
-            JSON.stringify(doc.data().submittedPolls) +
-            " done"
-        );
-        setSubmittedPolls(doc.data().submittedPolls);
-      }
-    });
-  }, []);
-
-  function editPoll(description, options, pollId) {
-    const newPolls = [
-      ...polls.slice(0, pollId),
-      {
-        id: pollId,
-        description: description,
-        options: options,
-      },
-      ...polls.slice(pollId + 1),
-    ];
-    setPolls(newPolls);
-  }
-
-  useEffect(() => {
-    //const cspoll = submittedPolls;
-    //console.log("last" + JSON.stringify(cspoll));
-    //console.log("outside submittedPolls set!: " + JSON.stringify(cspoll));
+  const updateSubmittedPoll = (p) => {
+    setSubmittedPolls(p);
     const db = firebase.firestore();
     db.collection("submittedPolls")
       .doc("globalId")
-      .set({ submittedPolls: submittedPolls })
+      .set({ submittedPolls: p })
       .then(() => {
-        console.log("submittedPolls set!: " + JSON.stringify(submittedPolls));
+        console.log("submittedPolls set!: " + JSON.stringify(p));
       })
       .catch((error) => {
         console.error("summittedPolls error: ", error);
       });
-  }, [submittedPolls]);
+  };
 
-  useEffect(() => {
-    //const cupoll = userPolls;
-    //console.log("last" + JSON.stringify(cupoll));
-    //console.log("outside userPolls set!: " + JSON.stringify(cupoll));
+  const updateUserPoll = (p) => {
+    setUserPolls(p);
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
     db.collection("userPolls")
       .doc(uid)
-      .set({ userPolls: userPolls })
+      .set({ userPolls: p })
       .then(() => {
-        console.log("userPolls set!: " + JSON.stringify(userPolls));
+        console.log("userPolls set!: " + JSON.stringify(p));
       })
       .catch((error) => {
         console.error("userPolls error: ", error);
       });
-  }, [userPolls]);
-
-  useEffect(() => {
-    //const cpoll = polls;
-    //console.log("last" + JSON.stringify(cpoll));
-    //console.log("outside (creator) polls set!" + JSON.stringify(cpoll));
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    if (polls !== []) {
-      db.collection("polls")
-        .doc(uid)
-        .set({ polls: polls })
-        .then(() => {
-          console.log("(creator) polls set!" + JSON.stringify(polls));
-        })
-        .catch((error) => {
-          console.error("(creator) polls: error", error);
-        });
-    }
-  }, [polls]);
-
-  useEffect(() => {
-    const delta =
-      submittedPolls &&
-      submittedPolls.slice(userPolls === null ? 0 : userPolls.length);
-    delta &&
-      delta.forEach((i) => {
-        i.completed = false;
-        i.responses = [];
-      });
-    const newUserPolls =
-      delta === null
-        ? []
-        : userPolls === null
-        ? [...delta]
-        : [...userPolls, ...delta];
-    setUserPolls(newUserPolls || userPolls);
-    // eslint-disable-next-line
-  }, [submittedPolls]);
+  };
 
   // List objects
   const home = { id: "Dashboard", icon: <HomeIcon /> };
@@ -226,56 +178,36 @@ function PageHome() {
           <Route
             exact
             path="/"
-            render={() => (
-              <Dashboard
-                polls={polls}
-                setPolls={setPolls}
-                editPoll={editPoll}
-                submittedPolls={submittedPolls}
-                setSubmittedPolls={setSubmittedPolls}
-              />
-            )}
+            render={() => <Dashboard submittedPolls={submittedPolls} />}
           />
           <Route
             exact
             path="/Dashboard"
-            render={() => (
-              <Dashboard
-                polls={polls}
-                setPolls={setPolls}
-                editPoll={editPoll}
-                submittedPolls={submittedPolls}
-                setSubmittedPolls={setSubmittedPolls}
-              />
-            )}
+            render={() => <Dashboard submittedPolls={submittedPolls} />}
           />
           <Route
             path="/PollCreator"
             render={() => (
               <PollManager
                 polls={polls}
-                setPolls={setPolls}
-                editPoll={editPoll}
+                updatePoll={updatePoll}
                 submittedPolls={submittedPolls}
-                setSubmittedPolls={setSubmittedPolls}
+                updateSubmittedPoll={updateSubmittedPoll}
               />
             )}
           />
           <Route
             path="/PollPreviewer"
-            render={() => <Previewer polls={polls} editPoll={editPoll} />}
+            render={() => <Previewer polls={polls} />}
           />
           <Route
             path="/UncompletedPolls"
             render={() => (
               <UncompletedPolls
-                polls={polls}
-                setPolls={setPolls}
-                editPoll={editPoll}
                 submittedPolls={submittedPolls}
-                setSubmittedPolls={setSubmittedPolls}
+                updateSubmittedPoll={updateSubmittedPoll}
                 userPolls={userPolls}
-                setUserPolls={setUserPolls}
+                updateUserPoll={updateUserPoll}
               />
             )}
           />
@@ -283,13 +215,10 @@ function PageHome() {
             path="/CompletedPolls"
             render={() => (
               <CompletedPolls
-                polls={polls}
-                setPolls={setPolls}
-                editPoll={editPoll}
                 submittedPolls={submittedPolls}
-                setSubmittedPolls={setSubmittedPolls}
+                updateSubmittedPoll={updateSubmittedPoll}
                 userPolls={userPolls}
-                setUserPolls={setUserPolls}
+                updateUserPoll={updateUserPoll}
               />
             )}
           />

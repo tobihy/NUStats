@@ -100,7 +100,7 @@ function useProvideAuth() {
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [user]);
+  }, []);
 
   // Return the user object and auth methods
   return {
