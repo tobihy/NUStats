@@ -1,16 +1,18 @@
 import { Grid, Typography, List, ListItemText } from "@material-ui/core";
 import Rectangle from "../UI/Rectangle";
+import { useAuth } from "../../auth/AuthHook";
 
 import styles from "./Dashboard.module.css";
 
 function Dashboard(props) {
   const { submittedPolls } = props;
+  const user = useAuth().user;
 
   const GridRectangle = (props) => (
     <Grid item xs={12} sm={6}>
       <Rectangle>
         <Typography variant="h5">{props.title}</Typography>
-        <List>{props.list}</List>
+        {props.content}
       </Rectangle>
     </Grid>
   );
@@ -20,15 +22,27 @@ function Dashboard(props) {
       <Grid container>
         <GridRectangle
           title={"Trending Polls"}
-          list={submittedPolls.map((poll) => (
-            <ListItemText key={poll.id}>{poll.description}</ListItemText>
-          ))}
+          content={
+            <List>
+              {submittedPolls.map((poll) => (
+                <ListItemText key={poll.id}>{poll.description}</ListItemText>
+              ))}
+            </List>
+          }
         />
         <GridRectangle
           title={"My Polls"}
-          list={submittedPolls.map((poll) => (
-            <ListItemText key={poll.id}>{poll.description}</ListItemText>
-          ))}
+          content={
+            <List>
+              {submittedPolls
+                .filter((poll) => {
+                  return poll.author === user;
+                })
+                .map((poll) => (
+                  <ListItemText key={poll.id}>{poll.description}</ListItemText>
+                ))}
+            </List>
+          }
         />
         <GridRectangle
           title={"Number of Polls Answered"}
@@ -37,7 +51,7 @@ function Dashboard(props) {
           ))}
         />
         <GridRectangle
-          title={"Did you know..."}
+          title={"Did you know?"}
           list={submittedPolls.map((poll) => (
             <ListItemText key={poll.id}>{poll.description}</ListItemText>
           ))}

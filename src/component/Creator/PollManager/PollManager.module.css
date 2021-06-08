@@ -1,7 +1,14 @@
 .field {
-  width: 100%;
+  width: 75%;
+  margin-right: 1rem;
 }
 
 .wrapper {
   padding-top: 1.5rem;
+}
+
+.forms {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
