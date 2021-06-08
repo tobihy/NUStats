@@ -4,22 +4,24 @@ import styles from "./UncompletedPolls.module.css";
 import Rectangle from "../../UI/Rectangle/Rectangle";
 
 function UncompletedPolls(props) {
-  const { userPolls, setUserPolls, submittedPolls, setSubmittedPolls } = props;
+  const { userPolls, updateUserPoll, submittedPolls, updateSubmittedPoll } =
+    props;
 
   return (
     <div className={styles.wrapper}>
       <h1>Uncompleted Polls</h1>
-      {userPolls
-        .filter((i) => !i.completed)
+      {submittedPolls
+        .filter((sp) => userPolls.filter((up) => up.id === sp.id).length === 0)
         .map((poll) => (
           <Rectangle key={poll.id}>
             <UserPoll
-              setUserPolls={setUserPolls}
+              updateUserPoll={updateUserPoll}
               poll={poll}
               pollId={poll.id}
               userPolls={userPolls}
-              setSubmittedPolls={setSubmittedPolls}
+              updateSubmittedPoll={updateSubmittedPoll}
               submittedPolls={submittedPolls}
+              completed={false}
             />
           </Rectangle>
         ))}

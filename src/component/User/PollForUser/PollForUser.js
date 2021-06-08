@@ -1,50 +1,44 @@
 import React, { useState } from "react";
-import {
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  IconButton,
-} from "@material-ui/core";
+import { FormControlLabel, Radio, RadioGroup, Button } from "@material-ui/core";
 import styles from "./PollForUser.module.css";
 import DoneIcon from "@material-ui/icons/Done";
+import firebase from "../../../auth/AuthHook";
 
 function UserPoll(props) {
   const {
     userPolls,
     submittedPolls,
-    setUserPolls,
+    updateUserPoll,
     poll,
     pollId,
-    setSubmittedPolls,
+    updateSubmittedPoll,
+    completed,
+    userPoll,
   } = props;
-  const [value, setValue] = useState(poll.responses);
-  // eslint-disable-next-line
-  const [completed, setCompleted] = useState(poll.completed);
+  const [value, setValue] = useState("");
 
   const handleChange = (event) => {
     setValue(event.target.value);
   };
 
   function handleSetSubmittedPolls(event) {
-    const newPoll = poll;
-    setCompleted(true);
-    newPoll.responses = value;
-    newPoll.completed = true;
-    const newUserPolls = [
-      ...userPolls.slice(0, pollId),
-      newPoll,
-      ...userPolls.slice(pollId + 1),
-    ];
-    setUserPolls(newUserPolls);
+    const optionId = poll.options
+      .filter((i) => i.description === value)
+      .pop().id;
 
-    const savedPoll = submittedPolls[pollId];
+    const newUserPolls = [...userPolls, { id: pollId, opt: optionId }];
+    updateUserPoll(newUserPolls);
+
+    const savedResponses = submittedPolls[pollId].reponses || [];
+
     const newSubmittedPoll = {
       id: pollId,
+      uid: poll.uid,
       description: poll.description,
       options: poll.options,
       responses: [
-        ...savedPoll.responses,
-        poll.options.filter((i) => i.description === value).pop().id,
+        ...savedResponses,
+        { uid: firebase.auth().currentUser?.uid, id: optionId },
       ],
     };
 
@@ -53,19 +47,18 @@ function UserPoll(props) {
       newSubmittedPoll,
       ...submittedPolls.slice(pollId + 1),
     ];
-    setSubmittedPolls(newSubmittedPolls);
-    setUserPolls(newUserPolls);
+    updateSubmittedPoll(newSubmittedPolls);
   }
 
   return (
     <div>
       <h2>{poll.description}</h2>
       <form onSubmit={handleSetSubmittedPolls}>
-        {poll.completed ? (
+        {completed ? (
           poll.options.map((option, index) => (
             <div key={option.id}>
-              {option.description === poll.responses ? (
-                <strong>{poll.responses}</strong>
+              {option.id === userPoll.opt ? (
+                <strong>{option.description}</strong>
               ) : (
                 option.description
               )}
@@ -90,15 +83,29 @@ function UserPoll(props) {
                 />
               ))}
             </RadioGroup>
-            <IconButton
-              aria-label="submit"
-              type="submit"
-              size="small"
-              className={styles.icon}
-              color="secondary"
-            >
-              <DoneIcon size="big" />
-            </IconButton>
+            {value === "" ? (
+              <Button
+                type="button"
+                size="small"
+                variant="contained"
+                className={styles.icon}
+                color="default"
+              >
+                Submit Response
+                <DoneIcon size="big" />
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                size="small"
+                variant="contained"
+                className={styles.icon}
+                color="primary"
+              >
+                Submit Response
+                <DoneIcon size="big" />
+              </Button>
+            )}
           </>
         )}
       </form>

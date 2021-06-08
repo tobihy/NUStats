@@ -5,8 +5,7 @@ import Rectangle from "../../UI/Rectangle/Rectangle";
 import styles from "./PollManager.module.css";
 
 export default function PollManager(props) {
-  const { editPoll, polls, setPolls, submittedPolls, setSubmittedPolls } =
-    props;
+  const { polls, updatePoll, submittedPolls, updateSubmittedPoll } = props;
   const [newPoll, setNewPoll] = useState("");
 
   /* Adding polls */
@@ -24,8 +23,27 @@ export default function PollManager(props) {
         options: options,
       },
     ];
-    setPolls(newPolls);
+    updatePoll(newPolls);
     setNewPoll("");
+  }
+
+  function thePolls() {
+    return (
+      polls &&
+      polls.map((poll, index) => (
+        <Rectangle key={index}>
+          <Poll
+            polls={polls}
+            poll={poll}
+            key={index}
+            pollId={index}
+            updatePoll={updatePoll}
+            submittedPolls={submittedPolls}
+            updateSubmittedPoll={updateSubmittedPoll}
+          />
+        </Rectangle>
+      ))
+    );
   }
 
   return (
@@ -49,20 +67,7 @@ export default function PollManager(props) {
           </Button>
         </form>
       </Rectangle>
-      {polls &&
-        polls.map((poll, index) => (
-          <Rectangle key={index}>
-            <Poll
-              polls={polls}
-              poll={poll}
-              pollId={index}
-              editPoll={editPoll}
-              setPolls={setPolls}
-              submittedPolls={submittedPolls}
-              setSubmittedPolls={setSubmittedPolls}
-            />
-          </Rectangle>
-        ))}
+      {thePolls()}
     </div>
   );
 }

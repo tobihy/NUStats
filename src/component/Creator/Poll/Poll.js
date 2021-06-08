@@ -1,21 +1,22 @@
-import React, { useState } from "react";
-import { TextField } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { Button, TextField, Grid, Input } from "@material-ui/core";
 import styles from "./Poll.module.css";
 import ClearIcon from "@material-ui/icons/Clear";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
-import PublishIcon from "@material-ui/icons/Publish";
+import PublishOutlinedIcon from "@material-ui/icons/PublishOutlined";
 import GridPoll from "../../UI/GridPoll";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import firebase from "../../../auth/AuthHook";
 
 function Poll(props) {
   const {
-    editPoll,
     poll,
     polls,
     pollId,
-    setPolls,
+    updatePoll,
     submittedPolls,
-    setSubmittedPolls,
+    updateSubmittedPoll,
   } = props;
   const [question, setQuestion] = useState(poll.description);
   const [options, setOptions] = useState(poll.options);
@@ -24,9 +25,29 @@ function Poll(props) {
 
   /* Handle Poll functions (Delete, Edit (Rename), Submit) */
   function handleDeletePoll(event) {
+    event.preventDefault();
     const newPolls = polls.filter((i) => i.id !== pollId);
     newPolls.forEach((p, index) => (p.id = index));
-    setPolls(newPolls);
+    console.log(newPolls);
+    updatePoll(newPolls);
+  }
+
+  useEffect(() => {
+    polls && setQuestion(polls[pollId].description);
+    polls && setOptions(polls[pollId].options);
+  }, [polls.length]); // eslint-disable-line
+
+  function editPoll(description, options, pollId) {
+    const newPolls = [
+      ...polls.slice(0, pollId),
+      {
+        id: pollId,
+        description: description,
+        options: options,
+      },
+      ...polls.slice(pollId + 1),
+    ];
+    updatePoll(newPolls);
   }
 
   function handleEditPoll(event, qns) {
@@ -35,20 +56,21 @@ function Poll(props) {
     editPoll(qns, options, pollId);
   }
 
-  function handleSubmitPoll() {
+  function handleSubmitPoll(event) {
+    event.preventDefault();
     const newSubmittedPolls = [
       ...submittedPolls,
       {
+        uid: firebase.auth().currentUser?.uid,
         id: submittedPolls.length,
         description: question,
         options: options,
         responses: [],
       },
     ];
-    setSubmittedPolls(newSubmittedPolls);
+    updateSubmittedPoll(newSubmittedPolls);
     const newPolls = [...polls.slice(0, pollId), ...polls.slice(pollId + 1)];
-    setPolls(newPolls);
-    window.location.reload();
+    updatePoll(newPolls);
   }
 
   /*Handle Option functions (Add, Delete, Edit) */
@@ -105,56 +127,33 @@ function Poll(props) {
             className={styles.field}
             label={"Poll " + (pollId + 1)}
             value={question}
+            error={question === ""}
             variant="outlined"
             fullWidth
-            onChange={(event) =>
-              handleEditPoll(
-                event,
-                event.target.value || "Poll " + (pollId + 1)
-              )
-            }
+            onChange={(event) => handleEditPoll(event, event.target.value)}
           />
-        }
-        button={
-          <>
-            <form onSubmit={handleSubmitPoll}>
-              <IconButton
-                aria-label="delete"
-                type="submit"
-                size="small"
-                color="primary"
-              >
-                <PublishIcon size="big" />
-              </IconButton>
-            </form>
-            <form onSubmit={handleDeletePoll}>
-              <IconButton
-                aria-label="delete"
-                type="submit"
-                size="small"
-                color="secondary"
-              >
-                <ClearIcon size="big" />
-              </IconButton>
-            </form>
-          </>
         }
       />
 
       {options.map((option) => (
         <GridPoll
+          key={option.id}
           textField={
-            <TextField
+            <Input
               className={styles.field}
               size="small"
-              label={"Option " + (option.id + 1)}
+              placeholder={"Option " + (option.id + 1)}
+              error={
+                option.description === "" ||
+                options.filter((opt) => opt.description === option.description)
+                  .length > 1
+              }
               fullWidth
               value={option.description}
               onChange={(event) => {
                 handleEditOption(event, {
                   id: option.id,
-                  description:
-                    event.target.value || "Option " + (option.id + 1),
+                  description: event.target.value,
                 });
               }}
             />
@@ -195,6 +194,73 @@ function Poll(props) {
           row={true}
         />
       </form>
+      <Grid container>
+        <Grid item lg={3} md={3} xs={2}></Grid>
+        <Grid item container lg={8} md={8} xs={9}>
+          <Grid item container lg={4} md={4} xs={9}>
+            <Grid item xs={5} md={4} lg={4}>
+              {options.length > 1 &&
+              question !== "" &&
+              options.filter((opt) => opt.description === "").length === 0 &&
+              options.filter(
+                (opt) =>
+                  options.filter((op) => op.description === opt.description)
+                    .length > 1
+              ).length === 0 ? (
+                <form
+                  onSubmit={handleSubmitPoll}
+                  className={styles.field && styles.row}
+                >
+                  <Button
+                    aria-label="delete"
+                    type="submit"
+                    size="small"
+                    color="primary"
+                    variant="contained"
+                    className={styles.field}
+                  >
+                    Submit
+                    <PublishOutlinedIcon size="big" />
+                  </Button>
+                </form>
+              ) : (
+                <div className={styles.row}>
+                  <Button
+                    aria-label="delete"
+                    size="small"
+                    variant="contained"
+                    color="default"
+                    className={styles.field}
+                  >
+                    Submit
+                    <PublishOutlinedIcon size="big" />
+                  </Button>
+                </div>
+              )}
+            </Grid>
+            <Grid item xs={2} md={4} lg={4}></Grid>
+            <Grid item xs={5} md={4} lg={4}>
+              <form
+                onSubmit={handleDeletePoll}
+                className={styles.field && styles.row}
+              >
+                <Button
+                  aria-label="delete"
+                  type="submit"
+                  size="small"
+                  color="secondary"
+                  variant="contained"
+                  className={styles.field}
+                >
+                  Delete
+                  <DeleteOutlineIcon size="big" />
+                </Button>
+              </form>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item lg={1} md={1} xs={1}></Grid>
+      </Grid>
     </>
   );
 }
