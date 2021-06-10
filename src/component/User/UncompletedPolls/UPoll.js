@@ -3,6 +3,8 @@ import { FormControlLabel, Radio, RadioGroup, Button } from "@material-ui/core";
 import styles from "./UPoll.module.css";
 import DoneIcon from "@material-ui/icons/Done";
 import { fsSubmitResponse } from "../../../firestore/Responses";
+import updateSubmitCount from "../../../backend/UserInfo";
+import firebase from "../../../auth/AuthHook";
 
 function UserPoll(props) {
   const { poll } = props;
@@ -13,11 +15,13 @@ function UserPoll(props) {
   };
 
   function handleSetSubmittedPolls(event) {
+    const uid = firebase.auth().currentUser?.uid;
     event.preventDefault();
     const optionId = poll.options
       .filter((i) => i.description === value)
       .pop().id;
     fsSubmitResponse(poll.id, optionId);
+    updateSubmitCount(uid);
   }
 
   function timestamp() {
