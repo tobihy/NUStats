@@ -8,16 +8,11 @@ import PublishOutlinedIcon from "@material-ui/icons/PublishOutlined";
 import GridPoll from "../../UI/GridPoll";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import firebase from "../../../auth/AuthHook";
+import { fsDeletePoll, fsUpdatePoll } from "../../../firestore/Poll";
+import { fsSubmitPoll } from "../../../firestore/SubmittedPoll";
 
 function Poll(props) {
-  const {
-    poll,
-    polls,
-    pollId,
-    updatePoll,
-    submittedPolls,
-    updateSubmittedPoll,
-  } = props;
+  const { index, poll, polls, setPolls } = props;
   const [question, setQuestion] = useState(poll.description);
   const [options, setOptions] = useState(poll.options);
   const [newOptionText, setNewOptionText] = useState("");
@@ -26,97 +21,70 @@ function Poll(props) {
   /* Handle Poll functions (Delete, Edit (Rename), Submit) */
   function handleDeletePoll(event) {
     event.preventDefault();
-    const newPolls = polls.filter((i) => i.id !== pollId);
-    newPolls.forEach((p, index) => (p.id = index));
-    console.log(newPolls);
-    updatePoll(newPolls);
+    const newPolls = polls.filter((i) => i.id !== poll.id);
+    fsDeletePoll(poll);
+    setPolls(newPolls);
   }
 
   useEffect(() => {
-    polls && setQuestion(polls[pollId].description);
-    polls && setOptions(polls[pollId].options);
+    polls && setQuestion(polls[index].description);
+    polls && setOptions(polls[index].options);
   }, [polls.length]); // eslint-disable-line
 
-  function editPoll(description, options, pollId) {
-    const newPolls = [
-      ...polls.slice(0, pollId),
-      {
-        id: pollId,
-        description: description,
-        options: options,
-      },
-      ...polls.slice(pollId + 1),
-    ];
-    updatePoll(newPolls);
+  function editPoll(description, options) {
+    const newPoll = {
+      id: poll.id,
+      description: description,
+      options: options,
+      update: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    fsUpdatePoll(newPoll);
+    const newPolls = polls.map((p) => (p.id === poll.id ? newPoll : p));
+    setPolls(newPolls);
   }
 
   function handleEditPoll(event, qns) {
     event.preventDefault();
     setQuestion(qns);
-    editPoll(qns, options, pollId);
+    editPoll(qns, options);
   }
 
   function handleSubmitPoll(event) {
     event.preventDefault();
-    const newSubmittedPolls = [
-      ...submittedPolls,
-      {
-        uid: firebase.auth().currentUser?.uid,
-        id: submittedPolls.length,
-        description: question,
-        options: options,
-        responses: [],
-      },
-    ];
-    updateSubmittedPoll(newSubmittedPolls);
-    const newPolls = [...polls.slice(0, pollId), ...polls.slice(pollId + 1)];
-    updatePoll(newPolls);
+    fsSubmitPoll(poll);
+    fsDeletePoll(poll);
+    const newPolls = polls.filter((p) => p.id !== poll.id);
+    setPolls(newPolls);
   }
 
   /*Handle Option functions (Add, Delete, Edit) */
   function handleAddOption(event) {
     event.preventDefault();
-    addOption(newOptionText);
-  }
-
-  function addOption(description) {
     const newOptions = [
       ...options,
       {
         id: options.length,
-        description: description,
+        description: newOptionText,
       },
     ];
     setOptions(newOptions);
     setNewOptionText("");
-    editPoll(question, newOptions, pollId);
+    editPoll(question, newOptions);
   }
 
   function handleDeleteOption(event) {
     event.preventDefault();
-    deleteOption(optionToDelete);
-  }
-
-  function deleteOption(option) {
-    const newOptions = options.filter((i) => i.id !== option.id);
+    const newOptions = options.filter((i) => i.id !== optionToDelete.id);
     newOptions.forEach((opt, index) => (opt.id = index));
     setOptions(newOptions);
-    editPoll(question, newOptions, pollId);
+    editPoll(question, newOptions);
   }
 
   function handleEditOption(event, option) {
     event.preventDefault();
-    editOption(option);
-  }
-
-  function editOption(option) {
-    const newOptions = [
-      ...options.slice(0, option.id),
-      option,
-      ...options.slice(option.id + 1),
-    ];
+    const newOptions = options.map((o) => (o.id === option.id ? option : o));
     setOptions(newOptions);
-    editPoll(question, newOptions, pollId);
+    editPoll(question, newOptions);
   }
 
   return (
@@ -125,7 +93,7 @@ function Poll(props) {
         textField={
           <TextField
             className={styles.field}
-            label={"Poll " + (pollId + 1)}
+            label={"Poll " + (index + 1)}
             value={question}
             error={question === ""}
             variant="outlined"

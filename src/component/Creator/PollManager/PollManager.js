@@ -3,28 +3,34 @@ import Poll from "../Poll";
 import { Button, TextField } from "@material-ui/core";
 import Rectangle from "../../UI/Rectangle/Rectangle";
 import styles from "./PollManager.module.css";
+import { fsAddPoll } from "../../../firestore/Poll";
+import firebase from "../../../auth/AuthHook";
 
 export default function PollManager(props) {
-  const { polls, updatePoll, submittedPolls, updateSubmittedPoll } = props;
-  const [newPoll, setNewPoll] = useState("");
+  const { polls, setPolls, submittedPolls, updateSubmittedPoll } = props;
+  const [newDescription, setNewDescription] = useState("");
 
   /* Adding polls */
   function handleAddPoll(event) {
     event.preventDefault();
-    addPoll(newPoll, []);
+    addPoll(newDescription);
   }
 
-  function addPoll(description, options) {
+  async function addPoll(description) {
+    const newPoll = {
+      description: description,
+      options: [],
+      updated: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    const id = await fsAddPoll(newPoll);
     const newPolls = [
       ...polls,
       {
-        id: polls.length,
-        description: description,
-        options: options,
+        id: id,
+        ...newPoll,
       },
     ];
-    updatePoll(newPolls);
-    setNewPoll("");
+    setPolls(newPolls);
   }
 
   function thePolls() {
@@ -35,9 +41,8 @@ export default function PollManager(props) {
           <Poll
             polls={polls}
             poll={poll}
-            key={index}
-            pollId={index}
-            updatePoll={updatePoll}
+            index={index}
+            setPolls={setPolls}
             submittedPolls={submittedPolls}
             updateSubmittedPoll={updateSubmittedPoll}
           />
@@ -54,8 +59,8 @@ export default function PollManager(props) {
           <TextField
             className={styles.field}
             label="Poll"
-            value={newPoll}
-            onChange={(event) => setNewPoll(event.target.value)}
+            value={newDescription}
+            onChange={(event) => setNewDescription(event.target.value)}
           />
           <Button
             className={styles.button}

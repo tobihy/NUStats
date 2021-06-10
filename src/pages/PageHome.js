@@ -4,11 +4,13 @@ import Previewer from "../component/Creator/Previewer";
 import NavBar from "../component/NavBar";
 import CompletedPolls from "../component/User/CompletedPolls";
 import UncompletedPolls from "../component/User/UncompletedPolls";
+import MySubmittedPolls from "../component/User/MySubmittedPolls";
 import Dashboard from "../component/Dashboard";
 import HomeIcon from "@material-ui/icons/Home";
 import CreateIcon from "@material-ui/icons/Create";
 import PollOutlinedIcon from "@material-ui/icons/PollOutlined";
 import AssignmentTurnedInOutlinedIcon from "@material-ui/icons/AssignmentTurnedInOutlined";
+import CloudDoneOutlinedIcon from "@material-ui/icons/CloudDoneOutlined";
 import { Divider } from "@material-ui/core";
 import {
   List,
@@ -32,8 +34,9 @@ import firebase from "../auth/AuthHook";
 function PageHome() {
   const [polls, setPolls] = useState([]);
   const [submittedPolls, setSubmittedPolls] = useState([]);
-  const [userPolls, setUserPolls] = useState([]);
+  const [myCompletedPolls, setMyCompletedPolls] = useState([]);
   const [drawer, setDrawer] = useState(false);
+  const location = window.location.pathname;
 
   function toggleDrawer() {
     setDrawer(!drawer);
@@ -42,89 +45,80 @@ function PageHome() {
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    const pollsRef = db.collection("polls").doc(uid);
-    const userPollsRef = db.collection("userPolls").doc(uid);
-    const submittedPollsRef = db.collection("submittedPolls").doc("globalId");
+    const pollsRef = db.collection("users").doc(uid).collection("draftPolls");
+    const submittedPollsRef = db.collection("draftSubmittedPolls");
 
-    var sp = [];
-    var up = [];
+    pollsRef
+      .orderBy("updated", "desc")
+      .get()
+      .then((querySnapshot) => {
+        const tempDocs = [];
+        querySnapshot.forEach((doc) => {
+          tempDocs.push({ id: doc.id, ...doc.data() });
+        });
+        console.log("polls retrieved" + JSON.stringify(tempDocs) + " done");
+        setPolls(tempDocs);
+      });
 
-    pollsRef.get().then((doc) => {
-      if (doc.exists) {
+    submittedPollsRef
+      .orderBy("submissionTime", "desc")
+      .get()
+      .then((querySnapshot) => {
+        const tempDocs = [];
+        querySnapshot.forEach((pollRef) => {
+          tempDocs.push({
+            id: pollRef.id,
+            ...pollRef.data(),
+          });
+        });
         console.log(
-          "polls retrieved" + JSON.stringify(doc.data().polls || []) + " done"
+          "submittedPolls retrieved" + JSON.stringify(tempDocs) + " done"
         );
-        setPolls(doc.data().polls || []);
-      }
-    });
+        setSubmittedPolls(tempDocs);
+      });
+  }, [location]);
 
-    userPollsRef.get().then((doc) => {
-      if (doc.exists) {
-        up = doc.data().userPolls || [];
-        console.log("userPolls retrieved" + JSON.stringify(up) + " done");
-        setUserPolls(up);
-      }
-    });
-
-    submittedPollsRef.get().then((doc) => {
-      if (doc.exists) {
-        sp = doc.data().submittedPolls || [];
-        console.log("submittedPolls retrieved" + JSON.stringify(sp) + " done");
-        setSubmittedPolls(sp);
-      }
-    });
-    // .then(() => refreshUserPoll(up, sp));
-    //eslint-disable-next-line
-  }, []);
-
-  const updatePoll = (p) => {
-    setPolls(p);
+  useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    db.collection("polls")
-      .doc(uid)
-      .set({ polls: p })
-      .then(() => {
-        console.log("(creator) polls set!" + JSON.stringify(p));
-      })
-      .catch((error) => {
-        console.error("(creator) polls: error", error);
+    const responsesRef = db.collection("responses");
+    const submittedPollsRef = db.collection("draftSubmittedPolls");
+    const tempDocs = [];
+    responsesRef
+      .where("uid", "==", uid)
+      .orderBy("timestamp", "desc")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((pollRef) => {
+          const response = {
+            ...pollRef.data(),
+          };
+          // console.log("response", response);
+          submittedPollsRef
+            .doc(response.pollId)
+            .get()
+            .then((pollSnapshot) => {
+              var poll = pollSnapshot.data();
+              // console.log("poll", poll);
+              // console.log("toPush", { ...poll, ...response });
+              tempDocs.push({ ...poll, ...response });
+            });
+          console.log(
+            "completedPolls retrieved" + JSON.stringify(tempDocs) + " done"
+          );
+          setMyCompletedPolls(tempDocs);
+        });
       });
-  };
-
-  const updateSubmittedPoll = (p) => {
-    setSubmittedPolls(p);
-    const db = firebase.firestore();
-    db.collection("submittedPolls")
-      .doc("globalId")
-      .set({ submittedPolls: p })
-      .then(() => {
-        console.log("submittedPolls set!: " + JSON.stringify(p));
-      })
-      .catch((error) => {
-        console.error("summittedPolls error: ", error);
-      });
-  };
-
-  const updateUserPoll = (p) => {
-    setUserPolls(p);
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    db.collection("userPolls")
-      .doc(uid)
-      .set({ userPolls: p })
-      .then(() => {
-        console.log("userPolls set!: " + JSON.stringify(p));
-      })
-      .catch((error) => {
-        console.error("userPolls error: ", error);
-      });
-  };
+  }, [location]);
 
   // List objects
   const home = { id: "Dashboard", icon: <HomeIcon /> };
   const pollCreator = { id: "Poll Creator", icon: <CreateIcon /> };
   const pollPreviewer = { id: "Poll Previewer", icon: <VisibilityIcon /> };
+  const mySubmittedPolls = {
+    id: "My Submitted Polls",
+    icon: <CloudDoneOutlinedIcon />,
+  };
   const uncompletedPolls = {
     id: "Uncompleted Polls",
     icon: <PollOutlinedIcon />,
@@ -138,6 +132,7 @@ function PageHome() {
     home,
     pollCreator,
     pollPreviewer,
+    mySubmittedPolls,
     uncompletedPolls,
     completedPolls,
   ];
@@ -190,37 +185,23 @@ function PageHome() {
             render={() => (
               <PollManager
                 polls={polls}
-                updatePoll={updatePoll}
+                setPolls={setPolls}
                 submittedPolls={submittedPolls}
-                updateSubmittedPoll={updateSubmittedPoll}
               />
             )}
           />
+          <Route path="/MySubmittedPolls" render={() => <MySubmittedPolls />} />
           <Route
             path="/PollPreviewer"
             render={() => <Previewer polls={polls} />}
           />
           <Route
             path="/UncompletedPolls"
-            render={() => (
-              <UncompletedPolls
-                submittedPolls={submittedPolls}
-                updateSubmittedPoll={updateSubmittedPoll}
-                userPolls={userPolls}
-                updateUserPoll={updateUserPoll}
-              />
-            )}
+            render={() => <UncompletedPolls submittedPolls={submittedPolls} />}
           />
           <Route
             path="/CompletedPolls"
-            render={() => (
-              <CompletedPolls
-                submittedPolls={submittedPolls}
-                updateSubmittedPoll={updateSubmittedPoll}
-                userPolls={userPolls}
-                updateUserPoll={updateUserPoll}
-              />
-            )}
+            render={() => <CompletedPolls completedPolls={myCompletedPolls} />}
           />
         </Switch>
       </main>
