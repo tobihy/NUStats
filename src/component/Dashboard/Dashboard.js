@@ -1,4 +1,4 @@
-import { Grid, Typography, List, ListItemText } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import {
   CartesianGrid,
   XAxis,
@@ -17,19 +17,115 @@ import styles from "./Dashboard.module.css";
 
 function GridRectangle(props) {
   return (
+    <Grid item xs={12} sm={6}>
+      <Rectangle>
+        <Typography variant="h5">{props.title}</Typography>
+        {props.children}
+      </Rectangle>
+    </Grid>
+  );
+}
+
+function GridRow(props) {
+  return (
     <>
-      <Grid item xs={12} sm={6}>
-        <Rectangle>
-          <Typography variant="h5">{props.title}</Typography>
-          {props.children}
-        </Rectangle>
+      <Grid item container>
+        <Grid item xs={10} sm={11}>
+          {props.description}
+        </Grid>
+        <Grid item xs={2} sm={1}>
+          {props.number}
+        </Grid>
       </Grid>
     </>
   );
 }
 
-function Dashboard(props) {
-  const { submittedPolls } = props;
+function Dashboard() {
+  const [submittedPolls, setSubmittedPolls] = useState([]);
+  const [mySubmittedPolls, setMySubmittedPolls] = useState([]);
+  const [randomPoll, setMyRandomPoll] = useState();
+
+  useEffect(() => {
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    const submittedPollsRef = db.collection("draftSubmittedPolls");
+
+    submittedPollsRef
+      .orderBy("pollCount", "desc")
+      .limit(5)
+      .get()
+      .then((querySnapshot) => {
+        const tempDocs = [];
+        querySnapshot.forEach((pollRef) => {
+          tempDocs.push({
+            description: pollRef.data().description,
+            pollCount: pollRef.data().pollCount,
+          });
+        });
+        console.log(
+          "submittedPolls retrieved" + JSON.stringify(tempDocs) + " done"
+        );
+        setSubmittedPolls(tempDocs);
+      });
+
+    const snapShot = db
+      .collection("draftSubmittedPolls")
+      .where("creator", "==", uid)
+      .orderBy("pollCount", "desc")
+      .limit(5)
+      .get();
+
+    snapShot.then((querySnapshot) => {
+      const tempDocs = [];
+      querySnapshot.forEach((pollRef) => {
+        tempDocs.push({
+          description: pollRef.data().description,
+          pollCount: pollRef.data().pollCount,
+        });
+      });
+      console.log(
+        "mySubmittedPolls retrieved" + JSON.stringify(tempDocs) + " done"
+      );
+      setMySubmittedPolls(tempDocs);
+    });
+
+    submittedPollsRef
+      .where("pollCount", ">", 0)
+      .orderBy("pollCount", "desc")
+      .limit(100)
+      .get()
+      .then((querySnapshot) => {
+        const pollIds = [];
+        querySnapshot.forEach((pollRef) => pollIds.push(pollRef.id));
+        const random = Math.floor(Math.random() * pollIds.length);
+        pollIds.length > 0 &&
+          submittedPollsRef
+            .doc(pollIds[random])
+            .get()
+            .then((pollSnapshot) => {
+              const tempPoll = pollSnapshot.data();
+              console.log(tempPoll);
+              const randomOption = Math.floor(
+                Math.random() * tempPoll.options.length
+              );
+              submittedPollsRef
+                .doc(pollSnapshot.id)
+                .collection("options")
+                .doc(randomOption.toString())
+                .get()
+                .then((optSnapshot) => {
+                  setMyRandomPoll({
+                    description: tempPoll.description,
+                    pollCount: tempPoll.pollCount,
+                    optionCount: optSnapshot.data().optionCount,
+                    optionDescription:
+                      tempPoll.options[randomOption].description,
+                  });
+                });
+            });
+      });
+  }, []);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -58,28 +154,43 @@ function Dashboard(props) {
           setData(doc.data().monthArr);
         }
       });
-  });
+  }, []);
+
+  function didYouKnow(poll) {
+    return (
+      poll &&
+      poll.optionCount +
+        " (" +
+        (poll.optionCount / poll.pollCount) * 100 +
+        "%) out of " +
+        poll.pollCount +
+        " respondents chose " +
+        poll.optionDescription +
+        " in " +
+        poll.description
+    );
+  }
 
   return (
     <div className={styles.wrapper}>
-      <Grid container>
+      <Grid container spacing={4}>
         <GridRectangle title={"Trending Polls"}>
-          <List>
-            {submittedPolls.map((poll) => (
-              <ListItemText key={poll.id}>{poll.description}</ListItemText>
-            ))}
-          </List>
+          {submittedPolls.map((poll, index) => (
+            <GridRow
+              key={index}
+              description={poll.description}
+              number={poll.pollCount}
+            />
+          ))}
         </GridRectangle>
         <GridRectangle title={"My Polls"}>
-          <List>
-            {submittedPolls
-              .filter((poll) => {
-                return poll.uid === firebase.auth().currentUser?.uid;
-              })
-              .map((poll) => (
-                <ListItemText key={poll.id}>{poll.description}</ListItemText>
-              ))}
-          </List>
+          {mySubmittedPolls.map((poll, index) => (
+            <GridRow
+              key={index}
+              description={poll.description}
+              number={poll.pollCount}
+            />
+          ))}
         </GridRectangle>
         <GridRectangle title={"Number of Polls Answered"}>
           <ResponsiveContainer aspect={1.618}>
@@ -92,7 +203,9 @@ function Dashboard(props) {
             </LineChart>
           </ResponsiveContainer>
         </GridRectangle>
-        <GridRectangle title={"Did you know?"}>To be implemented</GridRectangle>
+        <GridRectangle title={"Did you know?"}>
+          {didYouKnow(randomPoll)}
+        </GridRectangle>
       </Grid>
     </div>
   );

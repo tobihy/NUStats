@@ -23,7 +23,7 @@ export const initialiseSubmitCount = (uid) => {
     .firestore()
     .collection("userInfo")
     .doc(uid)
-    .set({ monthArr: initArr });
+    .set({ monthArr: initArr, total: 0 });
 };
 
 export default function updateSubmitCount(uid) {
@@ -35,5 +35,6 @@ export default function updateSubmitCount(uid) {
     var updateArr = doc.data().monthArr;
     updateArr[currMonth].polls++;
     userInfoRef.set({ monthArr: updateArr });
+    userInfoRef.update({ total: firebase.firestore.FieldValue.increment(1) });
   });
 }

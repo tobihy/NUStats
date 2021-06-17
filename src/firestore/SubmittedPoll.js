@@ -14,6 +14,7 @@ async function fsSubmitPoll(p) {
       submissionTime: firebase.firestore.FieldValue.serverTimestamp(),
       options: p.options,
       responses: [],
+      uids: [],
     })
     .then((docRef) => {
       id = docRef.id;

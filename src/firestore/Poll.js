@@ -4,7 +4,7 @@ const fsDeletePoll = (poll) => {
   const uid = firebase.auth().currentUser?.uid;
   const pollsRef = firebase
     .firestore()
-    .collection("users")
+    .collection("userInfo")
     .doc(uid)
     .collection("draftPolls");
   pollsRef
@@ -22,7 +22,7 @@ async function fsAddPoll(poll) {
   const uid = firebase.auth().currentUser?.uid;
   const pollsRef = firebase
     .firestore()
-    .collection("users")
+    .collection("userInfo")
     .doc(uid)
     .collection("draftPolls");
   var id = "";
@@ -42,7 +42,7 @@ const fsUpdatePoll = (poll) => {
   const uid = firebase.auth().currentUser?.uid;
   const pollsRef = firebase
     .firestore()
-    .collection("users")
+    .collection("userInfo")
     .doc(uid)
     .collection("draftPolls");
   pollsRef

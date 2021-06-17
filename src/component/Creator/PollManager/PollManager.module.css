@@ -12,3 +12,7 @@
   align-items: center;
   justify-content: center;
 }
+
+.rectangle {
+  max-width: 20px;
+}
