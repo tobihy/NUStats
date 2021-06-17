@@ -7,7 +7,7 @@ import updateSubmitCount from "../../../backend/UserInfo";
 import firebase from "../../../auth/AuthHook";
 
 function UserPoll(props) {
-  const { poll } = props;
+  const { poll, submitPoll } = props;
   const [value, setValue] = useState("");
 
   const handleChange = (event) => {
@@ -21,6 +21,7 @@ function UserPoll(props) {
       .filter((i) => i.description === value)
       .pop().id;
     fsSubmitResponse(poll.id, optionId);
+    submitPoll(poll.id);
     updateSubmitCount(uid);
   }
 
@@ -86,6 +87,7 @@ function UserPoll(props) {
   return (
     <div>
       {uncompletedPoll()}
+      <div>Number of responses: {poll.pollCount}</div>
       <div>Poll created by: {poll.creator}</div>
       <div>Poll submitted on: {timestamp()}</div>
     </div>

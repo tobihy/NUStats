@@ -6,10 +6,15 @@ const fsSubmitResponse = (pollId, optionId) => {
     .firestore()
     .collection("draftSubmittedPolls")
     .doc(pollId);
+
   submittedPollsRef
     .update({
       pollCount: firebase.firestore.FieldValue.increment(1),
-      responses: firebase.firestore.FieldValue.arrayUnion(uid),
+      uids: firebase.firestore.FieldValue.arrayUnion(uid),
+      responses: firebase.firestore.FieldValue.arrayUnion({
+        uid: uid,
+        optionId: optionId,
+      }),
     })
     .then(() => {
       console.log("Poll Count incremented");
@@ -27,7 +32,7 @@ const fsSubmitResponse = (pollId, optionId) => {
     })
     .catch((error) => console.error("Error incrementing option count"));
 
-  const userRef = firebase.firestore().collection("users").doc(uid);
+  const userRef = firebase.firestore().collection("userInfo").doc(uid);
 
   userRef
     .update({
@@ -36,34 +41,9 @@ const fsSubmitResponse = (pollId, optionId) => {
     .then(() => {
       console.log("User completion count incremented");
     })
-    .catch(() =>
-      userRef
-        .set({ completionCount: 1 })
-        .then(() => console.log("User completion count incremented"))
-        .catch((error) =>
-          console.error("Error incrementing user completion count", error)
-        )
+    .catch((error) =>
+      console.error("Error incrementing user completion count", error)
     );
-
-  const responsesRef = firebase.firestore().collection("responses");
-  responsesRef
-    .add({
-      uid: uid,
-      pollId: pollId,
-      optionId: optionId,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    })
-    .then(() =>
-      console.log(
-        "Response added uid: ",
-        uid,
-        " pollId: ",
-        pollId,
-        " optionId: ",
-        optionId
-      )
-    )
-    .catch((error) => console.error("Error incrementing option count"));
 };
 
 export { fsSubmitResponse };

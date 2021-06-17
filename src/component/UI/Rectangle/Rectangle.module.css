@@ -1,7 +1,10 @@
 .rectangle {
   flex-basis: 50%;
   flex-grow: 0;
-  margin: 1rem;
+  margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 50rem;
   padding: 1rem;
   box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2);
 }
