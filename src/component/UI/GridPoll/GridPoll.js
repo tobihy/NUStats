@@ -17,11 +17,11 @@ export function GridPoll(props) {
 export function GridPollTwo(props) {
   return (
     <Grid container item xs={12} justify="space-between" className={styles.row}>
-      <Grid item xs={6}>
+      <Grid item xs={"auto"}>
         {props.first}
       </Grid>
-      <Grid item xs={6}>
-        {props.third}
+      <Grid item xs={"auto"}>
+        {props.second}
       </Grid>
     </Grid>
   );

@@ -16,9 +16,9 @@ import AddIcon from "@material-ui/icons/Add";
 import PublishOutlinedIcon from "@material-ui/icons/PublishOutlined";
 import { GridPoll, GridPollTwo } from "../../UI/GridPoll/GridPoll";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import firebase from "../../../auth/AuthHook";
 import { fsDeletePoll, fsUpdatePoll } from "../../../firestore/Poll";
 import { fsSubmitPoll } from "../../../firestore/SubmittedPoll";
+import SaveOutlinedIcon from "@material-ui/icons/SaveOutlined";
 
 function Poll(props) {
   const { index, poll, polls, setPolls } = props;
@@ -61,6 +61,21 @@ function Poll(props) {
         (opt) =>
           options.filter((op) => op.description === opt.description).length > 1
       ).length === 0
+    );
+  }
+
+  function saveButton() {
+    return (
+      <Button
+        type="submit"
+        size="small"
+        color="primary"
+        variant="contained"
+        onClick={() => fsUpdatePoll(poll)}
+      >
+        Save
+        <SaveOutlinedIcon size="big" />
+      </Button>
     );
   }
 
@@ -116,9 +131,8 @@ function Poll(props) {
       id: poll.id,
       description: description,
       options: options,
-      update: firebase.firestore.FieldValue.serverTimestamp(),
+      update: Date.now(),
     };
-    fsUpdatePoll(newPoll);
     const newPolls = polls.map((p) => (p.id === poll.id ? newPoll : p));
     setPolls(newPolls);
   }
@@ -279,9 +293,10 @@ function Poll(props) {
       {preview ? previewer() : creator()}
       <GridPollTwo
         first={previewButton()}
-        third={
+        second={
           <>
-            <ButtonGroup className={styles.buttonGroup}>
+            <ButtonGroup>
+              {saveButton()}
               {deleteButton()}
               {submitButton()}
             </ButtonGroup>

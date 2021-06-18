@@ -13,7 +13,10 @@ export default function PollManager() {
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    const pollsRef = db.collection("users").doc(uid).collection("draftPolls");
+    const pollsRef = db
+      .collection("userInfo")
+      .doc(uid)
+      .collection("draftPolls");
 
     pollsRef
       .orderBy("updated", "desc")
