@@ -15,14 +15,10 @@ export default function PollManager() {
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-<<<<<<< HEAD
     const pollsRef = db
       .collection("userInfo")
       .doc(uid)
       .collection("draftPolls");
-=======
-    const pollsRef = db.collection("users").doc(uid).collection("draftPolls");
->>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
 
     pollsRef
       .orderBy("updated", "desc")
@@ -50,26 +46,13 @@ export default function PollManager() {
       options: [],
       updated: Date.now(),
     };
-<<<<<<< HEAD
     snackBar("success", "Poll successfully added!");
     fsAddPoll(newPoll, polls, setPolls);
-=======
-    const id = await fsAddPoll(newPoll);
-    const newPolls = [
-      {
-        id: id,
-        ...newPoll,
-      },
-      ...polls,
-    ];
-    setPolls(newPolls);
->>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
   }
 
   function thePolls() {
     return polls.map((poll, index) => (
       <Rectangle key={index} className={styles.rectangle}>
-<<<<<<< HEAD
         <Poll
           polls={polls}
           poll={poll}
@@ -77,9 +60,6 @@ export default function PollManager() {
           setPolls={setPolls}
           snackBar={snackBar}
         />
-=======
-        <Poll polls={polls} poll={poll} index={index} setPolls={setPolls} />
->>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
       </Rectangle>
     ));
   }

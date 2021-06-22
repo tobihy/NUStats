@@ -93,11 +93,7 @@ function Dashboard() {
     submittedPollsRef
       .where("pollCount", ">", 0)
       .orderBy("pollCount", "desc")
-<<<<<<< HEAD
       .limit(10)
-=======
-      .limit(100)
->>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
       .get()
       .then((querySnapshot) => {
         const pollIds = [];
@@ -113,29 +109,12 @@ function Dashboard() {
               const randomOption = Math.floor(
                 Math.random() * tempPoll.options.length
               );
-<<<<<<< HEAD
               setMyRandomPoll({
                 description: tempPoll.description,
                 pollCount: tempPoll.pollCount,
                 optionCount: tempPoll.optionCounts[randomOption],
                 optionDescription: tempPoll.options[randomOption].description,
               });
-=======
-              submittedPollsRef
-                .doc(pollSnapshot.id)
-                .collection("options")
-                .doc(randomOption.toString())
-                .get()
-                .then((optSnapshot) => {
-                  setMyRandomPoll({
-                    description: tempPoll.description,
-                    pollCount: tempPoll.pollCount,
-                    optionCount: optSnapshot.data().optionCount,
-                    optionDescription:
-                      tempPoll.options[randomOption].description,
-                  });
-                });
->>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
             });
       });
   }, []);
@@ -174,11 +153,7 @@ function Dashboard() {
       poll &&
       poll.optionCount +
         " (" +
-<<<<<<< HEAD
         ((poll.optionCount / poll.pollCount) * 100).toFixed(0) +
-=======
-        (poll.optionCount / poll.pollCount) * 100 +
->>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
         "%) out of " +
         poll.pollCount +
         " respondents chose " +
