@@ -1,0 +1,8 @@
+.pieWrapper {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.rotate {
+  transform: rotate(90deg);
+}

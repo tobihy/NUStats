@@ -18,24 +18,29 @@ const fsDeletePoll = (poll) => {
     });
 };
 
-async function fsAddPoll(poll) {
+function fsAddPoll(poll, polls, setPolls) {
   const uid = firebase.auth().currentUser?.uid;
   const pollsRef = firebase
     .firestore()
     .collection("userInfo")
     .doc(uid)
     .collection("draftPolls");
-  var id = "";
-  await pollsRef
+  pollsRef
     .add(poll)
     .then((docRef) => {
-      id = docRef.id;
+      const newPolls = [
+        {
+          id: docRef.id,
+          ...poll,
+        },
+        ...polls,
+      ];
+      setPolls(newPolls);
       console.log("Poll added " + poll.description + " ");
     })
     .catch((error) => {
       console.error("Error adding poll " + poll.description + " ", error);
     });
-  return id;
 }
 
 const fsUpdatePoll = (poll) => {

@@ -93,7 +93,7 @@ function Dashboard() {
     submittedPollsRef
       .where("pollCount", ">", 0)
       .orderBy("pollCount", "desc")
-      .limit(100)
+      .limit(10)
       .get()
       .then((querySnapshot) => {
         const pollIds = [];
@@ -109,20 +109,12 @@ function Dashboard() {
               const randomOption = Math.floor(
                 Math.random() * tempPoll.options.length
               );
-              submittedPollsRef
-                .doc(pollSnapshot.id)
-                .collection("options")
-                .doc(randomOption.toString())
-                .get()
-                .then((optSnapshot) => {
-                  setMyRandomPoll({
-                    description: tempPoll.description,
-                    pollCount: tempPoll.pollCount,
-                    optionCount: optSnapshot.data().optionCount,
-                    optionDescription:
-                      tempPoll.options[randomOption].description,
-                  });
-                });
+              setMyRandomPoll({
+                description: tempPoll.description,
+                pollCount: tempPoll.pollCount,
+                optionCount: tempPoll.optionCounts[randomOption],
+                optionDescription: tempPoll.options[randomOption].description,
+              });
             });
       });
   }, []);
@@ -161,7 +153,7 @@ function Dashboard() {
       poll &&
       poll.optionCount +
         " (" +
-        (poll.optionCount / poll.pollCount) * 100 +
+        ((poll.optionCount / poll.pollCount) * 100).toFixed(0) +
         "%) out of " +
         poll.pollCount +
         " respondents chose " +

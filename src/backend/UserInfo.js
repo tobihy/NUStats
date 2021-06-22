@@ -34,7 +34,9 @@ export default function updateSubmitCount(uid) {
     }
     var updateArr = doc.data().monthArr;
     updateArr[currMonth].polls++;
-    userInfoRef.set({ monthArr: updateArr });
-    userInfoRef.update({ total: firebase.firestore.FieldValue.increment(1) });
+    userInfoRef.update({
+      monthArr: updateArr,
+      total: firebase.firestore.FieldValue.increment(1),
+    });
   });
 }

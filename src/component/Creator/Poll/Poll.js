@@ -21,7 +21,7 @@ import { fsSubmitPoll } from "../../../firestore/SubmittedPoll";
 import SaveOutlinedIcon from "@material-ui/icons/SaveOutlined";
 
 function Poll(props) {
-  const { index, poll, polls, setPolls } = props;
+  const { index, poll, polls, setPolls, snackBar } = props;
   const [question, setQuestion] = useState(poll.description);
   const [options, setOptions] = useState(poll.options);
   const [newOptionText, setNewOptionText] = useState("");
@@ -71,7 +71,10 @@ function Poll(props) {
         size="small"
         color="primary"
         variant="contained"
-        onClick={() => fsUpdatePoll(poll)}
+        onClick={() => {
+          fsUpdatePoll(poll);
+          snackBar("success", "Poll successfully saved!");
+        }}
       >
         Save
         <SaveOutlinedIcon size="big" />
@@ -80,18 +83,14 @@ function Poll(props) {
   }
 
   function submitButton() {
-    return validation() ? (
+    return (
       <Button
         size="small"
         color="primary"
         variant="contained"
+        disabled={!validation()}
         onClick={handleSubmitPoll}
       >
-        Submit
-        <PublishOutlinedIcon size="big" />
-      </Button>
-    ) : (
-      <Button size="small" variant="contained" color="default">
         Submit
         <PublishOutlinedIcon size="big" />
       </Button>
@@ -116,6 +115,7 @@ function Poll(props) {
   /* Handle Poll functions (Delete, Edit (Rename), Submit) */
   function handleDeletePoll(event) {
     event.preventDefault();
+    snackBar("success", "Poll deleted successfully!");
     const newPolls = polls.filter((i) => i.id !== poll.id);
     fsDeletePoll(poll);
     setPolls(newPolls);
@@ -145,6 +145,7 @@ function Poll(props) {
 
   function handleSubmitPoll(event) {
     event.preventDefault();
+    snackBar("success", "Poll submitted successfully!");
     fsSubmitPoll(poll);
     fsDeletePoll(poll);
     const newPolls = polls.filter((p) => p.id !== poll.id);

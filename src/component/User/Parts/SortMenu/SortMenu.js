@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -15,18 +15,25 @@ const options = [
 ];
 
 export default function SortMenu(props) {
-  const { anchorEl, setAnchorEl, selectedIndex, setSelectedIndex } = props;
+  const { selectedIndex, setSelectedIndex } = props;
+  const [anchorEl, setAnchorEl] = useState();
 
   const handleClickListItem = (event) => {
+    event.preventDefault();
+    console.log("click");
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuItemClick = (event, index) => {
+    event.preventDefault();
+    console.log("click2");
     setSelectedIndex(index);
     setAnchorEl(null);
   };
 
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.preventDefault();
+    console.log("close");
     setAnchorEl(null);
   };
 
