@@ -34,9 +34,14 @@ export default function updateSubmitCount(uid) {
     }
     var updateArr = doc.data().monthArr;
     updateArr[currMonth].polls++;
+<<<<<<< HEAD
     userInfoRef.update({
       monthArr: updateArr,
       total: firebase.firestore.FieldValue.increment(1),
     });
+=======
+    userInfoRef.set({ monthArr: updateArr });
+    userInfoRef.update({ total: firebase.firestore.FieldValue.increment(1) });
+>>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
   });
 }

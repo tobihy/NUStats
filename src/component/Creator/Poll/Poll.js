@@ -64,6 +64,7 @@ function Poll(props) {
     );
   }
 
+<<<<<<< HEAD
   function saveButton() {
     return (
       <Button
@@ -84,16 +85,31 @@ function Poll(props) {
 
   function submitButton() {
     return (
+=======
+  function submitButton() {
+    return validation() ? (
+>>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
       <Button
         size="small"
         color="primary"
         variant="contained"
+<<<<<<< HEAD
         disabled={!validation()}
+=======
+>>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
         onClick={handleSubmitPoll}
       >
         Submit
         <PublishOutlinedIcon size="big" />
       </Button>
+<<<<<<< HEAD
+=======
+    ) : (
+      <Button size="small" variant="contained" color="default">
+        Submit
+        <PublishOutlinedIcon size="big" />
+      </Button>
+>>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
     );
   }
 
@@ -294,10 +310,16 @@ function Poll(props) {
       {preview ? previewer() : creator()}
       <GridPollTwo
         first={previewButton()}
+<<<<<<< HEAD
         second={
           <>
             <ButtonGroup>
               {saveButton()}
+=======
+        third={
+          <>
+            <ButtonGroup className={styles.buttonGroup}>
+>>>>>>> 93efff648338c14e63e0520c8a02d8cd71c76598
               {deleteButton()}
               {submitButton()}
             </ButtonGroup>
