@@ -118,7 +118,7 @@ We hope to make the data collection and analysis process **quick, easy and engag
 | ---- | -------------- | ------------------------------------------------------------------------------------------------------------- |
 | 1    | 29 Jun - 5 Jul | <ul><li>Solving the issues from Milestone 2                                                                   |
 | 2    | 6 - 12 Jul     | <ul><li>Completion of Stats Repository                                                                        |
-| 3    | 13 - 19 Jul    | <ul><li>Completion of Survey Dashvoard</li><li>Completion of Gamification System/targeted surveying</li></ul> |
+| 3    | 13 - 19 Jul    | <ul><li>Completion of Survey Dashboard</li><li>Completion of Gamification System/targeted surveying</li></ul> |
 | 4    | 20 - 26 Jul    | <ul><li>Adding pre-defined permissions for targeted surveying</li></ul>                                       |
 
 # Issues
