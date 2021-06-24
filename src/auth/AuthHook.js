@@ -3,7 +3,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
-import { initialiseUser } from "../backend/UserInfo";
+import { initialiseUser } from "../firestore/UserInfo";
 
 // NUStats Firebase credentials
 firebase.initializeApp({

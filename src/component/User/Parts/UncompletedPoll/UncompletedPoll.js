@@ -3,11 +3,11 @@ import { FormControlLabel, Radio, RadioGroup, Button } from "@material-ui/core";
 import styles from "./UncompletedPoll.module.css";
 import DoneIcon from "@material-ui/icons/Done";
 import { fsSubmitResponse } from "../../../../firestore/Responses";
-import updateSubmitCount from "../../../../backend/UserInfo";
+import updateSubmitCount from "../../../../firestore/UserInfo";
 import firebase from "../../../../auth/AuthHook";
 
 function UncompletedPoll(props) {
-  const { poll, submitPoll, snackBar } = props;
+  const { poll, submitPoll } = props;
   const [value, setValue] = useState("");
 
   const handleChange = (event) => {
@@ -17,7 +17,6 @@ function UncompletedPoll(props) {
   function handleSetSubmittedPolls(event) {
     const uid = firebase.auth().currentUser?.uid;
     event.preventDefault();
-    snackBar("success", "Response successfully submitted!");
     const optionId = poll.options
       .filter((i) => i.description === value)
       .pop().id;
@@ -53,9 +52,9 @@ function UncompletedPoll(props) {
               size="small"
               variant="contained"
               color="primary"
+              endIcon={<DoneIcon />}
             >
               Submit Response
-              <DoneIcon size="big" />
             </Button>
           </div>
         )}

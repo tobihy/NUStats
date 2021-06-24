@@ -1,61 +1,45 @@
-import React, { useState, useEffect } from "react";
 import firebase from "../auth/AuthHook";
-import { Avatar, CardActionArea, CardHeader } from "@material-ui/core";
-// eslint-disable-next-line
-import { BrowserRouter as Switch, Route, Link } from "react-router-dom";
-import PersonIcon from "@material-ui/icons/Person";
 
-function UserInfo(props) {
-  const [username, setUsername] = useState("");
-  const [avatarURL, setAvatarURL] = useState("");
+const date = new Date();
+const currMonth = date.getMonth();
 
-  useEffect(() => {
-    const userRef = firebase
-      .firestore()
-      .collection("userInfo")
-      .doc(props.uid)
-      .get();
+const initArr = [
+  { month: "Jan", polls: 0 },
+  { month: "Feb", polls: 0 },
+  { month: "Mar", polls: 0 },
+  { month: "Apr", polls: 0 },
+  { month: "May", polls: 0 },
+  { month: "Jun", polls: 0 },
+  { month: "Jul", polls: 0 },
+  { month: "Aug", polls: 0 },
+  { month: "Sep", polls: 0 },
+  { month: "Oct", polls: 0 },
+  { month: "Nov", polls: 0 },
+  { month: "Dec", polls: 0 },
+];
 
-    userRef.then((doc) => {
-      if (doc.exists) {
-        setUsername(doc.data().username);
-        console.log("wtf");
-        console.log("hello", doc.data().profilepic);
-        doc.data().profilepic &&
-          firebase
-            .storage()
-            .ref("profilepics")
-            .child(doc.id + "_200x200.jpeg")
-            .getDownloadURL()
-            .then((url) => {
-              console.log(url);
-              setAvatarURL(url);
-            });
-      }
-    });
-  }, [props.uid]);
+export const initialiseUser = (uid, username, email) => {
+  // Updates the collection of usernames in use
+  firebase.firestore().collection("usernames").doc(username).set({ count: 1 });
 
-  function header() {
-    return (
-      <CardActionArea component={Link} to={"/Users/" + props.uid}>
-        <CardHeader
-          avatar={
-            avatarURL ? (
-              <Avatar src={avatarURL} alt={username} />
-            ) : (
-              <Avatar>
-                <PersonIcon />
-              </Avatar>
-            )
-          }
-          title={username}
-          subheader={props.date}
-        />
-      </CardActionArea>
-    );
-  }
+  // Updates the collection of emails in use
+  firebase.firestore().collection("emails").doc(email).set({ count: 1 });
 
-  return <>{header()}</>;
+  // Updates the user's information
+  firebase.firestore().collection("userInfo").doc(uid).set({
+    username: username,
+    email: email,
+    monthArr: initArr,
+    profilepic: false,
+  });
+  console.log("user initialised!");
+};
+
+export default function updateSubmitCount(uid) {
+  const userInfoRef = firebase.firestore().collection("userInfo").doc(uid);
+  userInfoRef.get().then((doc) => {
+    var updateArr = doc.data().monthArr;
+    updateArr[currMonth].polls++;
+    userInfoRef.update({ monthArr: updateArr });
+  });
 }
-
-export { UserInfo };

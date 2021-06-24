@@ -1,11 +1,10 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import ReactCrop from "react-image-crop";
 import firebase from "../../auth/AuthHook";
-import { Avatar, Button, TextField, Snackbar } from "@material-ui/core";
-import MuiAlert from "@material-ui/lab/Alert";
-import { makeStyles } from "@material-ui/core/styles";
+import { Avatar, Button, TextField } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
 import "react-image-crop/dist/ReactCrop.css";
+import SnackBar from "../UI/SnackBar";
 
 function Settings() {
   const [username, setUsername] = useState("");
@@ -36,7 +35,7 @@ function Settings() {
 
   const handleSaveSettings = (event) => {
     event.preventDefault();
-    snackBar("success", "Settings saved!");
+    snackBar("Settings saved!");
     const userRef = firebase.firestore().collection("userInfo").doc(uid);
     firebase
       .storage()
@@ -56,36 +55,13 @@ function Settings() {
   };
 
   const [open, setOpen] = useState(false);
-  const [severity, setSeverity] = useState("sucesss");
   const [message, setMessage] = useState("");
 
-  const snackBar = (s, m) => {
-    setSeverity(s);
-    setMessage(m);
+  function snackBar(message) {
+    setMessage(message);
     setOpen(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      width: "100%",
-      "& > * + *": {
-        marginTop: theme.spacing(2),
-      },
-    },
-  }));
-
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
-  const classes = useStyles();
+
   const [file, setFile] = useState("");
   const [fileLink, setFileLink] = useState("");
   const [upImg, setUpImg] = useState();
@@ -227,13 +203,7 @@ function Settings() {
           </Button>
         </form>
       </div>
-      <div className={classes.root}>
-        <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity={severity}>
-            {message}
-          </Alert>
-        </Snackbar>
-      </div>
+      <SnackBar open={open} message={message} setOpen={setOpen} />
     </>
   );
 }

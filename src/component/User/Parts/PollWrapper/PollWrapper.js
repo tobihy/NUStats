@@ -1,27 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { UserInfo } from "../../../../firestore/UserInfo";
 import ResultsPoll from "../ResultsPoll";
 import UncompletedPoll from "../UncompletedPoll";
 import {
-  Snackbar,
+  Avatar,
+  CardActionArea,
+  CardHeader,
   Card,
   CardContent,
   Typography,
   Grid,
-  Switch,
   FormControlLabel,
+  Switch,
 } from "@material-ui/core";
-import MuiAlert from "@material-ui/lab/Alert";
-import { makeStyles } from "@material-ui/core/styles";
+import SnackBar from "../../../UI/SnackBar";
 import styles from "./PollWrapper.module.css";
+import firebase from "../../../../auth/AuthHook";
+// eslint-disable-next-line
+import { BrowserRouter as Route, Link } from "react-router-dom";
+import PersonIcon from "@material-ui/icons/Person";
 
 function PollWrapper(props) {
+  const [username, setUsername] = useState("");
+  const [avatarURL, setAvatarURL] = useState("");
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
   const { poll } = props;
   const [pollCopy, setPollCopy] = useState(poll);
   const [data, setData] = useState([]);
   const [peekResults, setPeekResults] = useState(false);
 
+  function snackBar(message) {
+    setMessage(message);
+    setOpen(true);
+  }
+
   useEffect(() => {
+    console.log("womanizer ", props.avatarURL);
+    if (username === "") {
+      const userRef = firebase
+        .firestore()
+        .collection("userInfo")
+        .doc(pollCopy.creator)
+        .get();
+
+      userRef.then((doc) => {
+        if (doc.exists) {
+          setUsername(doc.data().username);
+          console.log("wtf");
+          console.log("hello", doc.data().profilepic);
+          doc.data().profilepic &&
+            firebase
+              .storage()
+              .ref("profilepics")
+              .child(doc.id + "_200x200.jpeg")
+              .getDownloadURL()
+              .then((url) => {
+                console.log(url);
+                setAvatarURL(url);
+              });
+        }
+      });
+    }
     const tempDoc = [];
     poll.options.forEach((option) =>
       tempDoc.push({
@@ -31,6 +70,7 @@ function PollWrapper(props) {
     );
     setData(tempDoc);
     console.log("tempDoc", tempDoc);
+    //eslint-disable-next-line
   }, [poll]);
 
   function timestamp() {
@@ -65,6 +105,7 @@ function PollWrapper(props) {
     });
     const temp = data;
     temp[optId]["Number of Responses"]++;
+    snackBar("Response submitted successfully!");
     setData(temp);
   }
 
@@ -72,54 +113,32 @@ function PollWrapper(props) {
     return (
       <>
         {peekResults || (
-          <UncompletedPoll
-            poll={pollCopy}
-            submitPoll={submitPoll}
-            snackBar={snackBar}
-          />
+          <UncompletedPoll poll={pollCopy} submitPoll={submitPoll} />
         )}
         {peekResults && <ResultsPoll poll={pollCopy} data={data} />}
       </>
     );
   }
 
-  const [open, setOpen] = useState(false);
-  const [severity, setSeverity] = useState("sucesss");
-  const [message, setMessage] = useState("");
-
-  const snackBar = (s, m) => {
-    setSeverity(s);
-    setMessage(m);
-    setOpen(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      width: "100%",
-      "& > * + *": {
-        marginTop: theme.spacing(2),
-      },
-    },
-  }));
-
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
-  const classes = useStyles();
-
   return (
     <>
       <Grid item>
         <Card>
-          <UserInfo uid={pollCopy.creator} date={timestamp()} />
+          <CardActionArea component={Link} to={"/Users/" + pollCopy.creator}>
+            <CardHeader
+              avatar={
+                avatarURL !== "" ? (
+                  <Avatar src={avatarURL} alt={username} />
+                ) : (
+                  <Avatar>
+                    <PersonIcon />
+                  </Avatar>
+                )
+              }
+              title={username}
+              subheader={timestamp()}
+            />
+          </CardActionArea>
           <CardContent className={styles.cardcontent}>
             <Typography variant="subtitle1">{pollCopy.description}</Typography>
             {pollCopy.completed ? (
@@ -135,15 +154,15 @@ function PollWrapper(props) {
             >
               <Grid item>
                 <Typography variant="subtitle1">
-                  {poll.pollCount === 0
+                  {pollCopy.pollCount === 0
                     ? "There are no responses yet."
-                    : poll.pollCount === 1
+                    : pollCopy.pollCount === 1
                     ? "1 response"
-                    : poll.pollCount + " responses"}
+                    : pollCopy.pollCount + " responses"}
                 </Typography>
               </Grid>
               <Grid item>
-                {poll.completed ? null : poll.pollCount !== 0 ? (
+                {pollCopy.completed ? null : pollCopy.pollCount !== 0 ? (
                   <FormControlLabel
                     control={
                       <Switch
@@ -161,13 +180,7 @@ function PollWrapper(props) {
           </CardContent>
         </Card>
       </Grid>
-      <div className={classes.root}>
-        <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity={severity}>
-            {message}
-          </Alert>
-        </Snackbar>
-      </div>
+      <SnackBar open={open} message={message} setOpen={setOpen} />
     </>
   );
 }

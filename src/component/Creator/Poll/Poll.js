@@ -8,6 +8,7 @@ import {
   RadioGroup,
   Switch,
   ButtonGroup,
+  Typography,
 } from "@material-ui/core";
 import styles from "./Poll.module.css";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -73,7 +74,7 @@ function Poll(props) {
         variant="contained"
         onClick={() => {
           fsUpdatePoll(poll);
-          snackBar("success", "Poll successfully saved!");
+          snackBar("Poll successfully saved!");
         }}
       >
         Save
@@ -115,7 +116,7 @@ function Poll(props) {
   /* Handle Poll functions (Delete, Edit (Rename), Submit) */
   function handleDeletePoll(event) {
     event.preventDefault();
-    snackBar("success", "Poll deleted successfully!");
+    snackBar("Poll deleted successfully!");
     const newPolls = polls.filter((i) => i.id !== poll.id);
     fsDeletePoll(poll);
     setPolls(newPolls);
@@ -145,7 +146,7 @@ function Poll(props) {
 
   function handleSubmitPoll(event) {
     event.preventDefault();
-    snackBar("success", "Poll submitted successfully!");
+    snackBar("Poll submitted successfully!");
     fsSubmitPoll(poll);
     fsDeletePoll(poll);
     const newPolls = polls.filter((p) => p.id !== poll.id);
@@ -192,7 +193,6 @@ function Poll(props) {
               value={question}
               error={question === ""}
               fullWidth
-              inputProps={{ className: styles.input }}
               variant="outlined"
               onChange={(event) => handleEditPoll(event, event.target.value)}
             />
@@ -268,7 +268,9 @@ function Poll(props) {
   function previewer() {
     return (
       <>
-        <h2 className={styles.row}>{poll.description}</h2>
+        <Typography className={styles.row} variant="subtitle1">
+          {poll.description}
+        </Typography>
         <RadioGroup
           aria-label={poll.description}
           name={poll.description}

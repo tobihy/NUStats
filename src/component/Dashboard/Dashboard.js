@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, Card } from "@material-ui/core";
 import {
   CartesianGrid,
   XAxis,
@@ -8,20 +8,18 @@ import {
   Line,
   ResponsiveContainer,
 } from "recharts";
-import Rectangle from "../UI/Rectangle";
 import firebase from "../../auth/AuthHook";
 import { useEffect, useState } from "react";
-import { initialiseSubmitCount } from "../../backend/UserInfo";
 // eslint-disable-next-line
 import styles from "./Dashboard.module.css";
 
 function GridRectangle(props) {
   return (
     <Grid item xs={12} sm={6}>
-      <Rectangle>
+      <Card elevation={2} className={styles.rectangle}>
         <Typography variant="h5">{props.title}</Typography>
         {props.children}
-      </Rectangle>
+      </Card>
     </Grid>
   );
 }
@@ -151,25 +149,27 @@ function Dashboard() {
 
   return (
     <>
-      <Grid container spacing={4}>
-        <GridRectangle title={"Trending Polls"}>
-          {submittedPolls.map((poll, index) => (
-            <GridRow
-              key={index}
-              description={poll.description}
-              number={poll.pollCount}
-            />
-          ))}
-        </GridRectangle>
-        <GridRectangle title={"My Polls"}>
-          {mySubmittedPolls.map((poll, index) => (
-            <GridRow
-              key={index}
-              description={poll.description}
-              number={poll.pollCount}
-            />
-          ))}
-        </GridRectangle>
+      <Grid container spacing={2} justify="center">
+        <Grid container item direction="row" spacing={2} alignItems="stretch">
+          <GridRectangle title={"Trending Polls"}>
+            {submittedPolls.map((poll, index) => (
+              <GridRow
+                key={index}
+                description={poll.description}
+                number={poll.pollCount}
+              />
+            ))}
+          </GridRectangle>
+          <GridRectangle title={"My Polls"}>
+            {mySubmittedPolls.map((poll, index) => (
+              <GridRow
+                key={index}
+                description={poll.description}
+                number={poll.pollCount}
+              />
+            ))}
+          </GridRectangle>
+        </Grid>
         <GridRectangle title={"Number of Polls Answered"}>
           <ResponsiveContainer aspect={1.618}>
             <LineChart data={data} margin={{ top: 20, right: 50 }}>

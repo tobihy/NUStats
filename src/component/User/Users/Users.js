@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
 import firebase from "../../../auth/AuthHook";
-import { Avatar } from "@material-ui/core";
+import {
+  Avatar,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
 // eslint-disable-next-line
 import { BrowserRouter as Switch, Route, Link } from "react-router-dom";
-import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -64,11 +70,17 @@ function Users() {
   }
 
   return (
-    <List>
-      {users.map((user) => (
-        <UserRectangle key={user.uid} user={user} />
-      ))}
-    </List>
+    <>
+      <Typography variant="h5" align="center">
+        Users
+      </Typography>
+
+      <List>
+        {users.map((user) => (
+          <UserRectangle key={user.uid} user={user} />
+        ))}
+      </List>
+    </>
   );
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import PollManager from "../component/Creator/PollManager";
-import NavBar from "../component/NavBar";
+import NavBar, { BottomNav } from "../component/NavBar";
 import MySubmittedPolls from "../component/User/MySubmittedPolls";
 import Polls from "../component/User/Polls";
 import Dashboard from "../component/Dashboard";
@@ -26,22 +26,16 @@ function PageHome() {
         <Container maxWidth="md" className={styles.container}>
           <Switch>
             <Route exact path="/" render={() => <Dashboard />} />
-            <Route exact path="/Dashboard" render={() => <Dashboard />} />
-            <Route path="/PollCreator" render={() => <PollManager />} />
-            <Route
-              path="/MySubmittedPolls"
-              render={() => <MySubmittedPolls />}
-            />
+            <Route exact path="/Home" render={() => <Dashboard />} />
+            <Route path="/Drafts" render={() => <PollManager />} />
+            <Route path="/Profile" render={() => <MySubmittedPolls />} />
             <Route path="/Polls" render={() => <Polls />} />
             <Route path="/Settings" render={() => <Settings />} />
             <Route exact path="/Users" render={() => <Users />} />
-            <Route
-              exact
-              path="/Users/:userId"
-              render={() => <ProfilePage />}
-            ></Route>
+            <Route exact path="/Users/:userId" render={() => <ProfilePage />} />
           </Switch>
         </Container>
+        <BottomNav />
       </main>
     </BrowserRouter>
   );

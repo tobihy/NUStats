@@ -24,13 +24,7 @@ function PageLogin() {
 
   return (
     <BrowserRouter>
-      <Grid
-        container
-        direction="column"
-        alignItems="center"
-        xs={12}
-        spacing={3}
-      >
+      <Grid container direction="column" alignItems="center" spacing={3}>
         <Grid item xs={12}>
           <NUStatsLogo className={styles.logo} />
         </Grid>

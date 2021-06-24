@@ -13,13 +13,13 @@ function AppBody() {
     <>
       <div className={styles.App}>
         {user ? (
-          <Redirect to={{ pathname: "/Dashboard" }} />
+          <Redirect to={{ pathname: "/Home" }} />
         ) : (
           <Redirect to={{ pathname: "/Login" }} />
         )}
       </div>
       <Switch>
-        <Route path="/Dashboard" render={() => <PageHome />} />
+        <Route path="/Home" render={() => <PageHome />} />
         <Route path="/Login" render={() => <PageLogin />} />
       </Switch>
     </>
