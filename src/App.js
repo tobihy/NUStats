@@ -1,6 +1,7 @@
 import styles from "./styles.css";
 
 import { useAuth, ProvideAuth } from "./auth/AuthHook";
+import { Switch, Route, Redirect, BrowserRouter } from "react-router-dom";
 import PageLogin from "./pages/PageLogin";
 import PageHome from "./pages/PageHome";
 
@@ -9,14 +10,28 @@ function AppBody() {
   const user = auth.user;
 
   return (
-    <div className={styles.App}>{!user ? <PageLogin /> : <PageHome />}</div>
+    <>
+      <div className={styles.App}>
+        {user ? (
+          <Redirect to={{ pathname: "/Dashboard" }} />
+        ) : (
+          <Redirect to={{ pathname: "/Login" }} />
+        )}
+      </div>
+      <Switch>
+        <Route path="/Dashboard" render={() => <PageHome />} />
+        <Route path="/Login" render={() => <PageLogin />} />
+      </Switch>
+    </>
   );
 }
 
 export default function App() {
   return (
     <ProvideAuth>
-      <AppBody />
+      <BrowserRouter>
+        <AppBody />
+      </BrowserRouter>
     </ProvideAuth>
   );
 }

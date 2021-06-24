@@ -46,19 +46,20 @@ function UncompletedPoll(props) {
             />
           ))}
         </RadioGroup>
-        <Button
-          type="submit"
-          size="small"
-          variant="contained"
-          className={styles.icon}
-          color="primary"
-          disabled={value === ""}
-        >
-          Submit Response
-          <DoneIcon size="big" />
-        </Button>
+        {value && (
+          <div className={styles.button}>
+            <Button
+              type="submit"
+              size="small"
+              variant="contained"
+              color="primary"
+            >
+              Submit Response
+              <DoneIcon size="big" />
+            </Button>
+          </div>
+        )}
       </form>
-      <div>Number of responses: {poll.pollCount}</div>
     </>
   );
 }

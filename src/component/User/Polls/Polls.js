@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import styles from "./Polls.module.css";
-import Rectangle from "../../UI/Rectangle/Rectangle";
 import firebase from "../../../auth/AuthHook";
 import SortMenu from "../Parts/SortMenu";
-import { Button, ButtonGroup } from "@material-ui/core";
+import { Grid, Tabs, Tab } from "@material-ui/core";
 import PollWrapper from "../Parts/PollWrapper";
 
 function Polls() {
@@ -59,74 +57,59 @@ function Polls() {
   function View(props) {
     return (
       <>
-        <h1>{props.title}</h1>
-        {props.data}
+        <Grid
+          container
+          direction="column"
+          justify="center"
+          alignItems="stretch"
+          spacing={2}
+        >
+          {props.data}
+        </Grid>
       </>
     );
   }
 
   function all() {
-    return allPolls.map((poll, index) =>
-      poll.completed ? (
-        <Rectangle key={index}>
-          <PollWrapper poll={poll} />
-        </Rectangle>
-      ) : (
-        <Rectangle key={index}>
-          <PollWrapper poll={poll} />
-        </Rectangle>
-      )
-    );
+    return allPolls.map((poll, index) => (
+      <PollWrapper poll={poll} key={index} />
+    ));
   }
 
   function uncompleted() {
     return allPolls.map(
       (poll, index) =>
-        !poll.completed && (
-          <Rectangle key={index}>
-            <PollWrapper poll={poll} />
-          </Rectangle>
-        )
+        !poll.completed && <PollWrapper poll={poll} key={index} />
     );
   }
 
   function completed() {
     return allPolls.map(
-      (poll, index) =>
-        poll.completed && (
-          <Rectangle key={index}>
-            <PollWrapper poll={poll} />
-          </Rectangle>
-        )
+      (poll, index) => poll.completed && <PollWrapper poll={poll} key={index} />
     );
   }
 
   return (
     <>
-      <div className={styles.wrapper}>
-        <ButtonGroup variant="contained">
-          {["All Polls", "Uncompleted", "Completed"].map((name, index) => (
-            <Button
-              key={name}
-              type="button"
-              size="small"
-              color={"primary"}
-              variant="contained"
-              disabled={view === index}
-              onClick={() => setView(index)}
-            >
-              {name}
-            </Button>
-          ))}
-        </ButtonGroup>
-        <SortMenu
-          setSelectedIndex={setSelectedIndex}
-          selectedIndex={selectedIndex}
-        />
-        {view === 0 && <View title="All Polls" data={all()} />}
-        {view === 1 && <View title="Uncompleted Polls" data={uncompleted()} />}
-        {view === 2 && <View title="Completed Polls" data={completed()} />}
-      </div>
+      <Tabs
+        value={view}
+        onChange={(event, newValue) => setView(newValue)}
+        indicatorColor="primary"
+        textColor="primary"
+        variant="fullWidth"
+        centered
+      >
+        <Tab label="All Polls" />
+        <Tab label="Uncompleted" />
+        <Tab label="Completed" />
+      </Tabs>
+      <SortMenu
+        setSelectedIndex={setSelectedIndex}
+        selectedIndex={selectedIndex}
+      />
+      {view === 0 && <View data={all()} />}
+      {view === 1 && <View data={uncompleted()} />}
+      {view === 2 && <View data={completed()} />}
     </>
   );
 }

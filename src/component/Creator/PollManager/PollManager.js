@@ -98,28 +98,26 @@ export default function PollManager() {
 
   return (
     <>
-      <div className={styles.wrapper}>
-        <h1>Polls Creator</h1>
-        <Rectangle>
-          <form onSubmit={handleAddPoll} className={styles.forms}>
-            <TextField
-              className={styles.field}
-              label="Poll"
-              value={newDescription}
-              onChange={(event) => setNewDescription(event.target.value)}
-            />
-            <Button
-              className={styles.button}
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
-              Add
-            </Button>
-          </form>
-        </Rectangle>
-        {thePolls()}
-      </div>
+      <h1>Polls Creator</h1>
+      <Rectangle>
+        <form onSubmit={handleAddPoll} className={styles.forms}>
+          <TextField
+            className={styles.field}
+            label="Poll"
+            value={newDescription}
+            onChange={(event) => setNewDescription(event.target.value)}
+          />
+          <Button
+            className={styles.button}
+            type="submit"
+            variant="contained"
+            color="primary"
+          >
+            Add
+          </Button>
+        </form>
+      </Rectangle>
+      {thePolls()}
       <div className={classes.root}>
         <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
           <Alert onClose={handleClose} severity={severity}>

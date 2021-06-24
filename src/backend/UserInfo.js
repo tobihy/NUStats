@@ -18,25 +18,32 @@ const initArr = [
   { month: "Dec", polls: 0 },
 ];
 
-export const initialiseSubmitCount = (uid) => {
+export const initialiseUser = (uid, username, email) => {
+  // Updates the collection of usernames in use
+  firebase.firestore().collection("usernames").doc(username).set({ count: 1 });
+
+  // Updates the collection of emails in use
+  firebase.firestore().collection("emails").doc(email).set({ count: 1 });
+
+  // Updates the user's information
   firebase
     .firestore()
     .collection("userInfo")
     .doc(uid)
-    .set({ monthArr: initArr, total: 0 });
+    .set({
+      username: username,
+      email: email,
+      monthArr: initArr,
+      profilepic: false,
+    });
+  console.log("user initialised!");
 };
 
 export default function updateSubmitCount(uid) {
   const userInfoRef = firebase.firestore().collection("userInfo").doc(uid);
   userInfoRef.get().then((doc) => {
-    if (!doc.exists) {
-      initialiseSubmitCount(uid);
-    }
     var updateArr = doc.data().monthArr;
     updateArr[currMonth].polls++;
-    userInfoRef.update({
-      monthArr: updateArr,
-      total: firebase.firestore.FieldValue.increment(1),
-    });
+    userInfoRef.update({ monthArr: updateArr });
   });
 }

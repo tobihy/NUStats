@@ -12,7 +12,7 @@ import Rectangle from "../UI/Rectangle";
 import firebase from "../../auth/AuthHook";
 import { useEffect, useState } from "react";
 import { initialiseSubmitCount } from "../../backend/UserInfo";
-
+// eslint-disable-next-line
 import styles from "./Dashboard.module.css";
 
 function GridRectangle(props) {
@@ -128,20 +128,6 @@ function Dashboard() {
       .doc(user)
       .get()
       .then((doc) => {
-        if (!doc.exists) {
-          initialiseSubmitCount(user);
-        }
-      });
-  }, []);
-
-  useEffect(() => {
-    const user = firebase.auth().currentUser?.uid;
-    firebase
-      .firestore()
-      .collection("userInfo")
-      .doc(user)
-      .get()
-      .then((doc) => {
         if (doc.exists) {
           setData(doc.data().monthArr);
         }
@@ -164,7 +150,7 @@ function Dashboard() {
   }
 
   return (
-    <div className={styles.wrapper}>
+    <>
       <Grid container spacing={4}>
         <GridRectangle title={"Trending Polls"}>
           {submittedPolls.map((poll, index) => (
@@ -199,7 +185,7 @@ function Dashboard() {
           {didYouKnow(randomPoll)}
         </GridRectangle>
       </Grid>
-    </div>
+    </>
   );
 }
 

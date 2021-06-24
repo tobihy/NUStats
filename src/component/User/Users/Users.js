@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import ProfilePage from "../Parts/ProfilePage";
 import firebase from "../../../auth/AuthHook";
 import { Avatar } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
+// eslint-disable-next-line
 import { BrowserRouter as Switch, Route, Link } from "react-router-dom";
 import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 
@@ -63,25 +63,12 @@ function Users() {
     );
   }
 
-  function allUsers() {
-    return (
-      <List>
-        {users.map((user) => (
-          <UserRectangle key={user.uid} user={user} />
-        ))}
-      </List>
-    );
-  }
-
   return (
-    <Switch>
-      <Route exact path="/Users">
-        {allUsers()}
-      </Route>
-      <Route exact path="/Users/:userId">
-        <ProfilePage />
-      </Route>
-    </Switch>
+    <List>
+      {users.map((user) => (
+        <UserRectangle key={user.uid} user={user} />
+      ))}
+    </List>
   );
 }
 

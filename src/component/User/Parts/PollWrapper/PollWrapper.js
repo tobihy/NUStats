@@ -2,15 +2,24 @@ import React, { useState, useEffect } from "react";
 import { UserInfo } from "../../../../firestore/UserInfo";
 import ResultsPoll from "../ResultsPoll";
 import UncompletedPoll from "../UncompletedPoll";
-import { ButtonGroup, Button, Snackbar } from "@material-ui/core";
+import {
+  Snackbar,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Switch,
+  FormControlLabel,
+} from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import { makeStyles } from "@material-ui/core/styles";
+import styles from "./PollWrapper.module.css";
 
 function PollWrapper(props) {
   const { poll } = props;
   const [pollCopy, setPollCopy] = useState(poll);
   const [data, setData] = useState([]);
-  const [view, setView] = useState(0);
+  const [peekResults, setPeekResults] = useState(false);
 
   useEffect(() => {
     const tempDoc = [];
@@ -62,14 +71,14 @@ function PollWrapper(props) {
   function uncompleted() {
     return (
       <>
-        {view === 0 && (
+        {peekResults || (
           <UncompletedPoll
             poll={pollCopy}
             submitPoll={submitPoll}
             snackBar={snackBar}
           />
         )}
-        {view === 1 && <ResultsPoll poll={pollCopy} data={data} />}
+        {peekResults && <ResultsPoll poll={pollCopy} data={data} />}
       </>
     );
   }
@@ -108,32 +117,50 @@ function PollWrapper(props) {
 
   return (
     <>
-      <div>
-        <UserInfo uid={pollCopy.creator} date={timestamp()} />
-        <h2>{pollCopy.description}</h2>
-        {pollCopy.completed || (
-          <ButtonGroup>
-            {["Back to Poll", "View Results"].map((name, index) => (
-              <Button
-                key={name}
-                type="button"
-                size="small"
-                color="primary"
-                variant="contained"
-                disabled={view === index}
-                onClick={() => setView(index)}
-              >
-                {name}
-              </Button>
-            ))}
-          </ButtonGroup>
-        )}
-        {pollCopy.completed ? (
-          <ResultsPoll poll={pollCopy} data={data} />
-        ) : (
-          uncompleted()
-        )}
-      </div>
+      <Grid item>
+        <Card>
+          <UserInfo uid={pollCopy.creator} date={timestamp()} />
+          <CardContent className={styles.cardcontent}>
+            <Typography variant="subtitle1">{pollCopy.description}</Typography>
+            {pollCopy.completed ? (
+              <ResultsPoll poll={pollCopy} data={data} />
+            ) : (
+              uncompleted()
+            )}
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+            >
+              <Grid item>
+                <Typography variant="subtitle1">
+                  {poll.pollCount === 0
+                    ? "There are no responses yet."
+                    : poll.pollCount === 1
+                    ? "1 response"
+                    : poll.pollCount + " responses"}
+                </Typography>
+              </Grid>
+              <Grid item>
+                {poll.completed ? null : poll.pollCount !== 0 ? (
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={peekResults}
+                        onChange={() => setPeekResults(!peekResults)}
+                        color="primary"
+                      />
+                    }
+                    label="Show Results"
+                    labelPlacement="start"
+                  />
+                ) : null}
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
       <div className={classes.root}>
         <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
           <Alert onClose={handleClose} severity={severity}>

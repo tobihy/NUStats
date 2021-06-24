@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import firebase from "../auth/AuthHook";
-import { Avatar, CardHeader } from "@material-ui/core";
+import { Avatar, CardActionArea, CardHeader } from "@material-ui/core";
+// eslint-disable-next-line
+import { BrowserRouter as Switch, Route, Link } from "react-router-dom";
 import PersonIcon from "@material-ui/icons/Person";
 
 function UserInfo(props) {
@@ -15,35 +17,41 @@ function UserInfo(props) {
       .get();
 
     userRef.then((doc) => {
-      setUsername(doc.data().username);
-      doc.data().profilepic &&
-        firebase
-          .storage()
-          .ref("profilepics")
-          .child(doc.id + "_200x200.jpeg")
-          .getDownloadURL()
-          .then((url) => {
-            console.log(url);
-            setAvatarURL(url);
-          });
+      if (doc.exists) {
+        setUsername(doc.data().username);
+        console.log("wtf");
+        console.log("hello", doc.data().profilepic);
+        doc.data().profilepic &&
+          firebase
+            .storage()
+            .ref("profilepics")
+            .child(doc.id + "_200x200.jpeg")
+            .getDownloadURL()
+            .then((url) => {
+              console.log(url);
+              setAvatarURL(url);
+            });
+      }
     });
   }, [props.uid]);
 
   function header() {
     return (
-      <CardHeader
-        avatar={
-          avatarURL ? (
-            <Avatar src={avatarURL} alt={username} />
-          ) : (
-            <Avatar>
-              <PersonIcon />
-            </Avatar>
-          )
-        }
-        title={username}
-        subheader={props.date}
-      />
+      <CardActionArea component={Link} to={"/Users/" + props.uid}>
+        <CardHeader
+          avatar={
+            avatarURL ? (
+              <Avatar src={avatarURL} alt={username} />
+            ) : (
+              <Avatar>
+                <PersonIcon />
+              </Avatar>
+            )
+          }
+          title={username}
+          subheader={props.date}
+        />
+      </CardActionArea>
     );
   }
 

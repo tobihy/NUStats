@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import styles from "./ProfilePage.module.css";
-import Rectangle from "../../../UI/Rectangle/Rectangle";
 import firebase from "../../../../auth/AuthHook";
+import { Grid } from "@material-ui/core";
 import PollWrapper from "../PollWrapper";
 import { useParams } from "react-router-dom";
 
@@ -46,14 +45,20 @@ function ProfilePage(props) {
   }, [props.uid, userId]);
 
   return (
-    <div className={styles.wrapper}>
+    <>
       <h1>My Submitted Polls</h1>
-      {mySubmittedPolls.map((poll) => (
-        <Rectangle key={poll.id}>
-          <PollWrapper poll={poll} />
-        </Rectangle>
-      ))}
-    </div>
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="stretch"
+        spacing={2}
+      >
+        {mySubmittedPolls.map((poll) => (
+          <PollWrapper poll={poll} key={poll.id} />
+        ))}
+      </Grid>
+    </>
   );
 }
 

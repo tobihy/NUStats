@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
+import { initialiseUser } from "../backend/UserInfo";
 
 // NUStats Firebase credentials
 firebase.initializeApp({
@@ -35,24 +36,45 @@ export const useAuth = () => {
 function useProvideAuth() {
   const [user, setUser] = useState(null);
 
-  // Wrap any Firebase methods we want to use making sure ...
-  // ... to save the user to state.
-  const signin = () => {
+  // For Google sign ins
+  const googleSignIn = () => {
     return firebase
       .auth()
       .signInWithPopup(authProvider)
       .then((response) => {
         setUser(response.user);
         return response.user;
+      })
+      .catch((error) => {
+        console.log(error.code + ": " + error.message);
       });
   };
-  // Unused
-  const signup = (email, password) => {
+
+  // For email sign ins
+  const signin = (email, password) => {
+    return firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((response) => {
+        setUser(response.user);
+        console.log("firestore email signin success");
+        return response.user;
+      })
+      .catch((error) => {
+        console.log(error.code + ": " + error.message);
+        return null;
+      });
+  };
+
+  // For email sign ups
+  const signup = (username, email, password) => {
     return firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((response) => {
+        initialiseUser(response.user.uid, username, email);
         setUser(response.user);
+        console.log("firestore email signup success");
         return response.user;
       });
   };
@@ -106,6 +128,7 @@ function useProvideAuth() {
   // Return the user object and auth methods
   return {
     user,
+    googleSignIn,
     signin,
     signup,
     signout,

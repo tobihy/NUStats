@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { IconButton } from "@material-ui/core";
+import { Tabs, Tab } from "@material-ui/core";
 import BarGraph from "./BarGraph";
 import PieGraph from "./PieGraph";
 import BarChartIcon from "@material-ui/icons/BarChart";
@@ -7,7 +7,7 @@ import PieChartIcon from "@material-ui/icons/PieChart";
 import styles from "./ResultsPoll.module.css";
 
 function ResultsPoll(props) {
-  const [graph, setGraph] = useState(true);
+  const [view, setView] = useState(0);
   const { poll, data } = props;
 
   function barGraph() {
@@ -34,35 +34,23 @@ function ResultsPoll(props) {
       />
     );
   }
-
-  function handleSwitchGraph() {
-    setGraph(!graph);
-  }
-
-  function graphButton(icon, value) {
-    return (
-      <IconButton
-        type="button"
-        variant="contained"
-        color={graph === value ? "default" : "primary"}
-        onClick={handleSwitchGraph}
-        disabled={graph === value}
-      >
-        {icon}
-      </IconButton>
-    );
-  }
   return (
     <div>
-      {poll.pollCount !== 0 ? (
+      {poll.pollCount !== 0 && (
         <>
-          {graphButton(<BarChartIcon className={styles.rotate} />, true)}
-          {graphButton(<PieChartIcon />, false)}
-          <div>{graph ? barGraph() : pieGraph()}</div>
-          <div>Number of responses: {poll.pollCount}</div>
+          <Tabs
+            value={view}
+            onChange={(event, newValue) => setView(newValue)}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+            centered
+          >
+            <Tab icon={<BarChartIcon className={styles.rotate} />} />
+            <Tab icon={<PieChartIcon />} />
+          </Tabs>
+          <div>{!view ? barGraph() : pieGraph()}</div>
         </>
-      ) : (
-        <div>There are no responses yet.</div>
       )}
     </div>
   );

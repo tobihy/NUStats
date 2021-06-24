@@ -1,34 +1,74 @@
-import React from "react";
-import GoogleButton from "react-google-button";
+import React, { useState } from "react";
+import { Grid, Link } from "@material-ui/core";
 import { ReactComponent as NUStatsLogo } from "../graphics/logo.svg";
 
 import "firebase/auth";
 
-import { useAuth } from "../auth/AuthHook";
+import {
+  // eslint-disable-next-line
+  Switch,
+  Route,
+  BrowserRouter,
+} from "react-router-dom";
 
-import "../styles.css";
 import styles from "./PageLogin.module.css";
+import SignUp from "../component/SignUp/SignUp";
+import SignIn from "../component/SignIn/SignIn";
 
 function PageLogin() {
-  // Handler for Google sign in
-  // const handleGoogleSignIn = (firebase) => {
-  //   const authProvider = new firebase.auth.GoogleAuthProvider();
-  //   firebase.auth().signInWithPopup(authProvider);
-  // };
-  const auth = useAuth();
+  const [signUpView, setSignUpView] = useState(false);
+
+  const handleSignUpClick = () => {
+    setSignUpView(!signUpView);
+  };
 
   return (
-    <main>
-      <h1>Welcome to</h1>
-      <div className={styles.logo}>
-        <NUStatsLogo />
-      </div>
-      <GoogleButton
-        className={styles.loginButton}
-        type="dark"
-        onClick={() => auth.signin()}
-      />
-    </main>
+    <BrowserRouter>
+      <Grid
+        container
+        direction="column"
+        alignItems="center"
+        xs={12}
+        spacing={3}
+      >
+        <Grid item xs={12}>
+          <NUStatsLogo className={styles.logo} />
+        </Grid>
+        {signUpView ? (
+          <>
+            <Grid item xs={12}>
+              <SignUp />
+            </Grid>
+            <Grid item xs={12}>
+              <Link
+                onClick={() => handleSignUpClick()}
+                style={{ cursor: "pointer" }}
+              >
+                Have an account? Sign in here!
+              </Link>
+            </Grid>
+          </>
+        ) : (
+          <>
+            <Grid item xs={12}>
+              <SignIn />
+            </Grid>
+            <Grid item xs={12}>
+              <Link
+                onClick={() => handleSignUpClick()}
+                style={{ cursor: "pointer" }}
+              >
+                Don't have an account? Sign up here!
+              </Link>
+            </Grid>
+          </>
+        )}
+      </Grid>
+
+      <Switch>
+        <Route path="/SignUp" render={() => <SignUp />} />
+      </Switch>
+    </BrowserRouter>
   );
 }
 
