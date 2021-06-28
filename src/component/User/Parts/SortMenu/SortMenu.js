@@ -20,20 +20,20 @@ export default function SortMenu(props) {
 
   const handleClickListItem = (event) => {
     event.preventDefault();
-    console.log("click");
+
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuItemClick = (event, index) => {
     event.preventDefault();
-    console.log("click2");
+
     setSelectedIndex(index);
     setAnchorEl(null);
   };
 
   const handleClose = (event) => {
     event.preventDefault();
-    console.log("close");
+
     setAnchorEl(null);
   };
 

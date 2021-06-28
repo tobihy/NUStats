@@ -18,13 +18,10 @@ const fsSubmitResponse = (pollId, optionId) => {
 
   data["optionCounts." + optionId.toString()] =
     firebase.firestore.FieldValue.increment(1);
-  console.log(data);
 
   submittedPollsRef
     .update(data)
-    .then(() => {
-      console.log("Poll Count incremented");
-    })
+    .then(() => {})
     .catch((error) => console.error("Error incrementing poll count"));
 
   const userRef = firebase.firestore().collection("userInfo").doc(uid);
@@ -33,9 +30,7 @@ const fsSubmitResponse = (pollId, optionId) => {
     .update({
       completionCount: firebase.firestore.FieldValue.increment(1),
     })
-    .then(() => {
-      console.log("User completion count incremented");
-    })
+    .then(() => {})
     .catch((error) =>
       console.error("Error incrementing user completion count", error)
     );

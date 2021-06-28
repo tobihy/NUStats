@@ -14,8 +14,6 @@ import { BrowserRouter as Switch, Route, Link } from "react-router-dom";
 
 function Users() {
   const [users, setUsers] = useState([]);
-  //eslint-disable-next-line
-  const [view, setView] = useState("");
 
   useEffect(() => {
     const db = firebase.firestore();
@@ -32,7 +30,7 @@ function Users() {
           total: total,
         });
       });
-      console.log("allUsersReceived" + JSON.stringify(tempDocs) + " done");
+
       setUsers(tempDocs);
     });
   }, []);
@@ -41,16 +39,9 @@ function Users() {
     const [picUrl, setPicUrl] = useState("");
 
     useEffect(() => {
-      props.user.profilepic &&
-        firebase
-          .storage()
-          .ref("profilepics")
-          .child(props.user.uid + "_200x200.jpeg")
-          .getDownloadURL()
-          .then((url) => {
-            console.log(url);
-            setPicUrl(url);
-          });
+      if (props.user.profilepic !== false) {
+        setPicUrl(props.user.profilepic);
+      }
     }, [props]);
 
     return (

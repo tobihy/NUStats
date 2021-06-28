@@ -6,3 +6,8 @@
 .rotate {
   transform: rotate(90deg);
 }
+
+.graph {
+  display: flex;
+  justify-content: center;
+}

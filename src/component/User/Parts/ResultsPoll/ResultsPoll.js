@@ -49,7 +49,7 @@ function ResultsPoll(props) {
             <Tab icon={<BarChartIcon className={styles.rotate} />} />
             <Tab icon={<PieChartIcon />} />
           </Tabs>
-          <div>{!view ? barGraph() : pieGraph()}</div>
+          <div className={styles.graph}>{!view ? barGraph() : pieGraph()}</div>
         </>
       )}
     </div>

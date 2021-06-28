@@ -30,9 +30,7 @@ export const initialiseUser = (uid, username, email) => {
     username: username,
     email: email,
     monthArr: initArr,
-    profilepic: false,
   });
-  console.log("user initialised!");
 };
 
 export default function updateSubmitCount(uid) {

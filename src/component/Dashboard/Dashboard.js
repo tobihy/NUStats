@@ -1,4 +1,4 @@
-import { Grid, Typography, Card } from "@material-ui/core";
+import { Grid, Typography, Card, ListItem } from "@material-ui/core";
 import {
   CartesianGrid,
   XAxis,
@@ -27,14 +27,19 @@ function GridRectangle(props) {
 function GridRow(props) {
   return (
     <>
-      <Grid item container>
-        <Grid item xs={10} sm={11}>
-          {props.description}
-        </Grid>
-        <Grid item xs={2} sm={1}>
-          {props.number}
-        </Grid>
-      </Grid>
+      <ListItem
+        item
+        xs={12}
+        disableGutters
+        divider
+        dense
+        button
+        disableRipple
+        disableTouchRipple
+        className={styles.cursor}
+      >
+        <Typography variant="body1">{props.description}</Typography>
+      </ListItem>
     </>
   );
 }
@@ -42,7 +47,7 @@ function GridRow(props) {
 function Dashboard() {
   const [submittedPolls, setSubmittedPolls] = useState([]);
   const [mySubmittedPolls, setMySubmittedPolls] = useState([]);
-  const [randomPoll, setMyRandomPoll] = useState();
+  const [randomPoll, setMyRandomPoll] = useState({});
 
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
@@ -61,32 +66,28 @@ function Dashboard() {
             pollCount: pollRef.data().pollCount,
           });
         });
-        console.log(
-          "submittedPolls retrieved" + JSON.stringify(tempDocs) + " done"
-        );
         setSubmittedPolls(tempDocs);
       });
 
-    const snapShot = db
-      .collection("draftSubmittedPolls")
-      .where("creator", "==", uid)
-      .orderBy("pollCount", "desc")
-      .limit(5)
-      .get();
+    if (uid !== undefined) {
+      const snapShot = db
+        .collection("draftSubmittedPolls")
+        .where("creator", "==", uid)
+        .orderBy("pollCount", "desc")
+        .limit(5)
+        .get();
 
-    snapShot.then((querySnapshot) => {
-      const tempDocs = [];
-      querySnapshot.forEach((pollRef) => {
-        tempDocs.push({
-          description: pollRef.data().description,
-          pollCount: pollRef.data().pollCount,
+      snapShot.then((querySnapshot) => {
+        const tempDocs = [];
+        querySnapshot.forEach((pollRef) => {
+          tempDocs.push({
+            description: pollRef.data().description,
+            pollCount: pollRef.data().pollCount,
+          });
         });
+        setMySubmittedPolls(tempDocs);
       });
-      console.log(
-        "mySubmittedPolls retrieved" + JSON.stringify(tempDocs) + " done"
-      );
-      setMySubmittedPolls(tempDocs);
-    });
+    }
 
     submittedPollsRef
       .where("pollCount", ">", 0)
@@ -103,7 +104,7 @@ function Dashboard() {
             .get()
             .then((pollSnapshot) => {
               const tempPoll = pollSnapshot.data();
-              console.log(tempPoll);
+
               const randomOption = Math.floor(
                 Math.random() * tempPoll.options.length
               );
@@ -115,6 +116,7 @@ function Dashboard() {
               });
             });
       });
+    return () => setSubmittedPolls([]);
   }, []);
   const [data, setData] = useState([]);
 
@@ -161,13 +163,20 @@ function Dashboard() {
             ))}
           </GridRectangle>
           <GridRectangle title={"My Polls"}>
-            {mySubmittedPolls.map((poll, index) => (
-              <GridRow
-                key={index}
-                description={poll.description}
-                number={poll.pollCount}
-              />
-            ))}
+            {mySubmittedPolls.length === 0 ? (
+              <Typography variant="body1">
+                You have not submitted any polls, try submitting one under
+                Drafts!
+              </Typography>
+            ) : (
+              mySubmittedPolls.map((poll, index) => (
+                <GridRow
+                  key={index}
+                  description={poll.description}
+                  number={poll.pollCount}
+                />
+              ))
+            )}
           </GridRectangle>
         </Grid>
         <GridRectangle title={"Number of Polls Answered"}>
@@ -182,7 +191,7 @@ function Dashboard() {
           </ResponsiveContainer>
         </GridRectangle>
         <GridRectangle title={"Did you know?"}>
-          {didYouKnow(randomPoll)}
+          <Typography variant="body1">{didYouKnow(randomPoll)}</Typography>
         </GridRectangle>
       </Grid>
     </>

@@ -21,19 +21,17 @@ function SignIn() {
   // const handleUsernameChange = (event) => {
   //   event.preventDefault();
   //   setUsername(event.target.value.toLowerCase());
-  //   console.log("Username " + event.target.value + " is set!");
+  //
   // };
 
   const handleEmailChange = (event) => {
     event.preventDefault();
     setEmail(event.target.value.toLowerCase());
-    console.log("Email " + event.target.value + " is set!");
   };
 
   const handlePasswordChange = (event) => {
     event.preventDefault();
     setPassword(event.target.value);
-    console.log("Password " + event.target.value + " is set!");
   };
 
   return (
@@ -59,7 +57,7 @@ function SignIn() {
         <Grid item xs={12}>
           <TextField
             aria-label="email text field"
-            id="outlined-basic"
+            id="email"
             label="Email"
             name="email"
             variant="outlined"
@@ -69,7 +67,7 @@ function SignIn() {
         <Grid item xs={12}>
           <TextField
             aria-label="password text field"
-            id="outlined-basic"
+            id="password"
             label="Password"
             name="password"
             type="password"

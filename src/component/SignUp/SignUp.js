@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Grid, InputAdornment } from "@material-ui/core";
 
 import "firebase/auth";
@@ -11,6 +11,8 @@ import isEmail from "validator/lib/isEmail";
 import { IconButton } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 
+import SnackBar from "../UI/SnackBar";
+
 function SignUp() {
   const auth = useAuth();
 
@@ -18,24 +20,34 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [usernameHelper, setUsernameHelper] = useState(false);
+  const [emailHelper, setEmailHelper] = useState(false);
+  const [passwordHelper, setPasswordHelper] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
 
-  const [usernameInUse, setUsernameInUse] = useState(false);
-  const [emailInUse, setEmailInUse] = useState(false);
-  const [passwordValid, setPasswordValid] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [severity, setSeverity] = useState("success");
 
-  const [signupValid, setSignupValid] = useState(false);
+  function snackBar(message, severity) {
+    setMessage(message);
+    setSeverity(severity);
+    setOpen(true);
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
-    auth.signup(username, email, password);
-  }
 
-  // Checks if username is already in use
-  useEffect(() => {
-    if (username.length === 0) {
-      setUsernameInUse(false);
-    } else {
+    passwordError(password) && setPasswordHelper(true);
+    !isEmail(email) && setEmailHelper(true);
+    usernameError(username) && setUsernameHelper(true);
+
+    if (
+      !passwordError(password) &&
+      isEmail(email) &&
+      !usernameError(username)
+    ) {
       firebase
         .firestore()
         .collection("usernames")
@@ -43,151 +55,157 @@ function SignUp() {
         .get()
         .then((doc) => {
           if (doc.exists) {
-            setUsernameInUse(true);
+            snackBar("Username taken, please choose another one", "error");
           } else {
-            setUsernameInUse(false);
+            firebase
+              .firestore()
+              .collection("emails")
+              .doc(email.toLowerCase())
+              .get()
+              .then((doc) => {
+                if (doc.exists) {
+                  snackBar("Email taken, please choose another one", "error");
+                } else {
+                  auth.signup(username, email, password);
+                }
+              });
           }
         });
     }
-  }, [username]);
-
-  // Checks if email is already in use
-  useEffect(() => {
-    if (email.length === 0) {
-      setEmailInUse(false);
-    } else {
-      firebase
-        .firestore()
-        .collection("emails")
-        .doc(email.toLowerCase())
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            setEmailInUse(true);
-          } else {
-            setEmailInUse(false);
-          }
-        });
-    }
-  }, [email]);
+  }
 
   // Checks if the password is valid
-  useEffect(() => {
-    if (password.length >= 8) {
-      setPasswordValid(true);
-    } else {
-      setPasswordValid(false);
-    }
-  }, [password]);
+  function passwordError(password) {
+    return password.length < 8;
+  }
 
   // Checks if the signup is valid
-  useEffect(() => {
-    if (username.length !== 0 && isEmail(email) && password.length !== 0) {
-      setSignupValid(!usernameInUse && !emailInUse && passwordValid);
-    } else {
-      setSignupValid(false);
-    }
-  }, [username, email, password, usernameInUse, emailInUse, passwordValid]);
 
   const handleUsernameChange = (event) => {
-    // event.preventDefault();
     setUsername(event.target.value);
-    console.log("Username " + event.target.value + " is set!");
+    setUsernameHelper(false);
   };
 
   const handleEmailChange = (event) => {
-    // event.preventDefault();
     setEmail(event.target.value.toLowerCase());
-    console.log("Email " + event.target.value + " is set!");
+    setEmailHelper(false);
   };
 
   const handlePasswordChange = (event) => {
-    // event.preventDefault();
     setPassword(event.target.value);
-    console.log("Password " + event.target.value + " is set!");
+    setPasswordHelper(false);
   };
 
   const handleMouseDownPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  function usernameError(username) {
+    if (username.length === 0 || username.length > 30) {
+      return true;
+    }
+    return false;
+  }
+
+  function usernameHelperText(username) {
+    if (username.length === 0) {
+      return "Empty username is not allowed";
+    } else if (username.length > 30) {
+      return "Username length (30 characters) exceeded";
+    }
+    return "";
+  }
+
   return (
-    <form autoComplete="off" onSubmit={handleSubmit}>
-      <Grid
-        container
-        direction="column"
-        justify="center"
-        alignItems="center"
-        spacing={1}
-      >
-        <Grid item xs={10}>
-          <TextField
-            aria-label="username text field"
-            autoFocus={true}
-            id="outlined-basic"
-            label="Username"
-            name="username"
-            error={usernameInUse}
-            helperText={usernameInUse ? "Username in use" : " "}
-            variant="outlined"
-            onChange={(event) => handleUsernameChange(event)}
-          />
+    <>
+      <form autoComplete="off" onSubmit={handleSubmit}>
+        <Grid
+          container
+          direction="column"
+          justify="center"
+          alignItems="center"
+          spacing={1}
+        >
+          <Grid item xs={10}>
+            <TextField
+              aria-label="username text field"
+              autoFocus={true}
+              id="outlined-basic"
+              label="Username"
+              name="username"
+              error={usernameHelper ? usernameError(username) : false}
+              helperText={usernameHelper ? usernameHelperText(username) : ""}
+              variant="outlined"
+              onChange={(event) => handleUsernameChange(event)}
+            />
+          </Grid>
+          <Grid item xs={10}>
+            <TextField
+              aria-label="email text field"
+              id="outlined-basic"
+              label="Email"
+              name="email"
+              error={emailHelper ? !isEmail(email) : false}
+              helperText={
+                emailHelper && !isEmail(email) ? "Not a valid email" : ""
+              }
+              variant="outlined"
+              onChange={(event) => handleEmailChange(event)}
+            />
+          </Grid>
+          <Grid item xs={10}>
+            <TextField
+              fullWidth
+              aria-label="password text field"
+              id="outlined-basic"
+              label="Password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              error={passwordHelper ? passwordError(password) : false}
+              helperText={
+                passwordHelper
+                  ? passwordError(password)
+                    ? "Password is too short"
+                    : ""
+                  : ""
+              }
+              variant="outlined"
+              onChange={(event) => handlePasswordChange(event)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onMouseDown={handleMouseDownPassword}
+                      onMouseUp={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <PasswordStrengthBar
+              password={password}
+              minLength={8}
+              style={{ marginTop: 20 }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" color="primary" type="submit">
+              Sign up
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={10}>
-          <TextField
-            aria-label="email text field"
-            id="outlined-basic"
-            label="Email"
-            name="email"
-            error={emailInUse}
-            helperText={emailInUse ? "Email in use" : " "}
-            variant="outlined"
-            onChange={(event) => handleEmailChange(event)}
-          />
-        </Grid>
-        <Grid item xs={10}>
-          <TextField
-            fullWidth
-            aria-label="password text field"
-            id="outlined-basic"
-            label="Password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            variant="outlined"
-            onChange={(event) => handlePasswordChange(event)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onMouseDown={handleMouseDownPassword}
-                    onMouseUp={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <PasswordStrengthBar
-            password={password}
-            minLength={8}
-            style={{ marginTop: 20 }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={!signupValid}
-          >
-            Sign up
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+      </form>
+      <SnackBar
+        open={open}
+        message={message}
+        setOpen={setOpen}
+        severity={severity}
+      />
+    </>
   );
 }
 

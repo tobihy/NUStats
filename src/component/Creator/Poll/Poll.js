@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   TextField,
-  Input,
   FormControlLabel,
   Radio,
   RadioGroup,
@@ -53,18 +52,6 @@ function Poll(props) {
     );
   }
 
-  function validation() {
-    return (
-      options.length > 1 &&
-      question !== "" &&
-      options.filter((opt) => opt.description === "").length === 0 &&
-      options.filter(
-        (opt) =>
-          options.filter((op) => op.description === opt.description).length > 1
-      ).length === 0
-    );
-  }
-
   function saveButton() {
     return (
       <Button
@@ -72,6 +59,7 @@ function Poll(props) {
         size="small"
         color="primary"
         variant="contained"
+        disabled={!validation(question)}
         onClick={() => {
           fsUpdatePoll(poll);
           snackBar("Poll successfully saved!");
@@ -89,7 +77,7 @@ function Poll(props) {
         size="small"
         color="primary"
         variant="contained"
-        disabled={!validation()}
+        disabled={!validation(question)}
         onClick={handleSubmitPoll}
       >
         Submit
@@ -183,15 +171,62 @@ function Poll(props) {
     editPoll(question, newOptions);
   }
 
+  function optionValidator(option) {
+    return (
+      option.description.length > 50 ||
+      option.description === "" ||
+      options.filter((opt) => opt.description === option.description).length > 1
+    );
+  }
+
+  function optionHelperText(option) {
+    if (option.description.length > 50) {
+      return "Maximum characters (50) exceeded";
+    } else if (option.description === "") {
+      return "Option cannot be left empty";
+    } else if (
+      options.filter((opt) => opt.description === option.description).length > 1
+    ) {
+      return "Duplicated options are not supported";
+    } else if (option.description.length > 40) {
+      return option.description.length + " / 50";
+    }
+    return "";
+  }
+
+  function questionValidator(question) {
+    return question === "" || question.length > 200;
+  }
+
+  function questionHelperText() {
+    if (question === "") {
+      return "Question cannot be left empty";
+    } else if (question.length > 200) {
+      return "Maximum characters (200) exceed";
+    } else if (question.length > 190) {
+      return question.length + " / 200";
+    }
+    return "";
+  }
+
+  function validation(question) {
+    return (
+      options.length > 1 &&
+      !questionValidator(question) &&
+      options.every((opt) => !optionValidator(opt))
+    );
+  }
+
   function creator() {
     return (
       <>
         <GridPoll
           textField={
-            <Input
+            <TextField
               placeholder={"Poll"}
               value={question}
-              error={question === ""}
+              error={questionValidator(question)}
+              helperText={questionHelperText(question)}
               fullWidth
               variant="outlined"
               onChange={(event) => handleEditPoll(event, event.target.value)}
@@ -203,14 +238,11 @@ function Poll(props) {
           <GridPoll
             key={option.id}
             textField={
-              <Input
+              <TextField
                 placeholder={"Option " + (option.id + 1)}
-                error={
-                  option.description === "" ||
-                  options.filter(
-                    (opt) => opt.description === option.description
-                  ).length > 1
-                }
+                error={optionValidator(option)}
+                helperText={optionHelperText(option)}
+                autoFocus={true}
                 fullWidth
                 value={option.description}
                 onChange={(event) => {
@@ -237,30 +269,41 @@ function Poll(props) {
             row={true}
           />
         ))}
-        <form onSubmit={handleAddOption}>
+
+        {options.length > 20 ? (
           <GridPoll
             textField={
-              <TextField
-                size="small"
-                placeholder="Add Option"
-                fullWidth
-                value={newOptionText}
-                onChange={(event) => setNewOptionText(event.target.value)}
-              />
+              <Typography variant="subtitle1">
+                Maximum number of options (20) reached
+              </Typography>
             }
-            button={
-              <IconButton
-                aria-label="add"
-                type="submit"
-                size="small"
-                className={styles.icon}
-              >
-                <AddIcon size="big" />
-              </IconButton>
-            }
-            row={true}
           />
-        </form>
+        ) : (
+          <form onSubmit={handleAddOption}>
+            <GridPoll
+              textField={
+                <TextField
+                  size="small"
+                  placeholder="Add Option"
+                  fullWidth
+                  value={newOptionText}
+                  onChange={(event) => setNewOptionText(event.target.value)}
+                />
+              }
+              button={
+                <IconButton
+                  aria-label="add"
+                  type="submit"
+                  size="small"
+                  className={styles.icon}
+                >
+                  <AddIcon size="big" />
+                </IconButton>
+              }
+              row={true}
+            />
+          </form>
+        )}
       </>
     );
   }

@@ -31,8 +31,8 @@ function PieGraph(props) {
         dominantBaseline="central"
         width={25}
       >
-        {props.data[index].name.length > 20
-          ? props.data[index].name.substring(0, 17) + "..."
+        {props.data[index].name.length > 18
+          ? props.data[index].name.substring(0, 15) + "..."
           : props.data[index].name}
         : {value} {" ("}
         {((value / props.total) * 100).toFixed(0)}
@@ -42,10 +42,12 @@ function PieGraph(props) {
   };
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer height={300} width="95%">
       <PieChart height={250}>
         <Pie
-          data={props.data}
+          data={props.data.filter(
+            (entry) => entry["Number of Responses"] !== 0
+          )}
           cx="50%"
           cy="50%"
           startAngle={45}
@@ -56,12 +58,19 @@ function PieGraph(props) {
           label={label}
           className={styles.pieWrapper}
         >
-          {props.data.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={props.completed && index === props.optionId ? dark : light}
-            />
-          ))}
+          {props.data.map((entry, index) => {
+            if (entry["Number of Responses"] !== 0) {
+              return (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={
+                    props.completed && index === props.optionId ? dark : light
+                  }
+                />
+              );
+            }
+            return null;
+          })}
         </Pie>
         <Tooltip />
       </PieChart>

@@ -40,7 +40,7 @@ function UncompletedPolls() {
             ...otherProps,
           });
       });
-      console.log(
+      
         "uncompletedPolls: submittedPolls retrieved" +
           JSON.stringify(tempDocs) +
           " done"

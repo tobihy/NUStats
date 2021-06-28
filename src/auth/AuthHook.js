@@ -45,9 +45,7 @@ function useProvideAuth() {
         setUser(response.user);
         return response.user;
       })
-      .catch((error) => {
-        console.log(error.code + ": " + error.message);
-      });
+      .catch((error) => {});
   };
 
   // For email sign ins
@@ -57,11 +55,10 @@ function useProvideAuth() {
       .signInWithEmailAndPassword(email, password)
       .then((response) => {
         setUser(response.user);
-        console.log("firestore email signin success");
+
         return response.user;
       })
       .catch((error) => {
-        console.log(error.code + ": " + error.message);
         return null;
       });
   };
@@ -74,7 +71,7 @@ function useProvideAuth() {
       .then((response) => {
         initialiseUser(response.user.uid, username, email);
         setUser(response.user);
-        console.log("firestore email signup success");
+
         return response.user;
       });
   };

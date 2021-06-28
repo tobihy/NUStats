@@ -34,7 +34,7 @@ export default function PollManager() {
         querySnapshot.forEach((doc) => {
           tempDocs.push({ id: doc.id, ...doc.data() });
         });
-        console.log("polls retrieved" + JSON.stringify(tempDocs) + " done");
+
         setPolls(tempDocs);
       });
   }, []);
@@ -58,8 +58,8 @@ export default function PollManager() {
 
   function thePolls() {
     return polls.map((poll, index) => (
-      <Grid item xs={12}>
-        <Rectangle key={index} className={styles.rectangle}>
+      <Grid item xs={12} key={index}>
+        <Rectangle className={styles.rectangle}>
           <Poll
             polls={polls}
             poll={poll}

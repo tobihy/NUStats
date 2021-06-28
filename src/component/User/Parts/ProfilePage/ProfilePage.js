@@ -31,20 +31,11 @@ function ProfilePage(props) {
     userRef.then((doc) => {
       if (doc.exists) {
         setUsername(doc.data().username);
-        console.log("wtf");
-        console.log("hello", doc.data().profilepic);
-        doc.data().profilepic &&
-          firebase
-            .storage()
-            .ref("profilepics")
-            .child(doc.id + "_200x200.jpeg")
-            .getDownloadURL()
-            .then((url) => {
-              console.log(url);
-              setAvatarURL(url);
-            });
+        if (doc.data().profilepic !== undefined) {
+          setAvatarURL(doc.data().profilepic);
+        }
       }
-    });
+    }, []);
 
     const snapShot = db
       .collection("draftSubmittedPolls")
@@ -72,9 +63,6 @@ function ProfilePage(props) {
           });
         }
       });
-      console.log(
-        "mySubmittedPolls retrieved" + JSON.stringify(tempDocs) + " done"
-      );
       setMySubmittedPolls(tempDocs);
     });
   }, [props.uid, userId]);
@@ -100,9 +88,15 @@ function ProfilePage(props) {
             {username}
           </Typography>
         </Grid>
-        {mySubmittedPolls.map((poll) => (
-          <PollWrapper poll={poll} key={poll.id} />
-        ))}
+        {mySubmittedPolls.length === 0 ? (
+          <Typography variant="body1" align="center">
+            {username} has not submitted any polls.
+          </Typography>
+        ) : (
+          mySubmittedPolls.map((poll) => (
+            <PollWrapper poll={poll} key={poll.id} />
+          ))
+        )}
       </Grid>
     </>
   );

@@ -49,7 +49,7 @@ function Polls() {
           });
         }
       });
-      console.log("allPolls retrieved" + JSON.stringify(tempDocs) + " done");
+
       setAllPolls(tempDocs);
     });
   }, [selectedIndex, view]);

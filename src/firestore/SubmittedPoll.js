@@ -18,9 +18,7 @@ async function fsSubmitPoll(p) {
       responses: [],
       uids: [],
     })
-    .then((docRef) => {
-      console.log("Poll Submitted: " + p.description);
-    })
+    .then((docRef) => {})
     .catch((error) =>
       console.error("Error submitting poll " + p.description + " ", error)
     );

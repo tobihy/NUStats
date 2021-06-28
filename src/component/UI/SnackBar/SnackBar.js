@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Snackbar } from "@material-ui/core";
 
 function SnackBar(props) {
-  const { open, message, setOpen } = props;
+  const { open, message, setOpen, severity } = props;
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -30,7 +30,7 @@ function SnackBar(props) {
   return (
     <div className={classes.root}>
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success">
+        <Alert onClose={handleClose} severity={severity || "success"}>
           {message}
         </Alert>
       </Snackbar>

@@ -35,7 +35,6 @@ function PollWrapper(props) {
   }
 
   useEffect(() => {
-    console.log("womanizer ", props.avatarURL);
     if (username === "") {
       const userRef = firebase
         .firestore()
@@ -46,18 +45,9 @@ function PollWrapper(props) {
       userRef.then((doc) => {
         if (doc.exists) {
           setUsername(doc.data().username);
-          console.log("wtf");
-          console.log("hello", doc.data().profilepic);
-          doc.data().profilepic &&
-            firebase
-              .storage()
-              .ref("profilepics")
-              .child(doc.id + "_200x200.jpeg")
-              .getDownloadURL()
-              .then((url) => {
-                console.log(url);
-                setAvatarURL(url);
-              });
+          if (doc.data().profilepic !== undefined) {
+            setAvatarURL(doc.data().profilepic);
+          }
         }
       });
     }
@@ -69,7 +59,7 @@ function PollWrapper(props) {
       })
     );
     setData(tempDoc);
-    console.log("tempDoc", tempDoc);
+
     //eslint-disable-next-line
   }, [poll]);
 
@@ -80,7 +70,7 @@ function PollWrapper(props) {
     const dayInMs = 86400000;
     const hoursInMs = 3600000;
     const minInMs = 60000;
-    console.log(diffInMs / dayInMs);
+
     if (diffInMs / dayInMs > 7) {
       const dateInMillis = pollCopy.submissionTime.seconds * 1000;
       return new Date(dateInMillis).toDateString();

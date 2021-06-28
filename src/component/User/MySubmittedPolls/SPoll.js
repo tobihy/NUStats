@@ -51,7 +51,6 @@ function SPoll(props) {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc, index) => {
-          console.log(doc.data().optionCount);
           tempDoc.push({
             name: submittedPoll.options[doc.id].description,
             "Number of Responses": doc.data().optionCount,
@@ -59,7 +58,6 @@ function SPoll(props) {
         });
         setData(tempDoc);
       });
-    console.log("tempDoc", tempDoc);
   }, [submittedPoll]);
 
   const renderCustomizedLabel = (props) => {

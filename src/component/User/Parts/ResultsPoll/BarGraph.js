@@ -62,7 +62,7 @@ function BarGraph(props) {
   };
 
   return (
-    <ResponsiveContainer width={"100%"} height={50 * data.length} debounce={50}>
+    <ResponsiveContainer height={50 * data.length} width="95%">
       <BarChart
         data={data}
         layout="vertical"
@@ -77,7 +77,7 @@ function BarGraph(props) {
           tickLine={false}
           tick={{ fill: "#080808" }}
           tickFormatter={(str) =>
-            str.length > 40 ? str.substring(0, 37) + "..." : str
+            str.length > 30 ? str.substring(0, 27) + "..." : str
           }
           width={80}
         />

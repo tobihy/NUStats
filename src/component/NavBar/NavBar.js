@@ -69,7 +69,7 @@ export function BottomNav() {
   ) : null;
 }
 
-function NavBar() {
+function NavBar(props) {
   const auth = useAuth();
   const user = auth.user;
 
@@ -116,7 +116,7 @@ function NavBar() {
             <Avatar
               className={styles.clickable}
               alt={user.displayName}
-              src={user.photoURL}
+              src={props.avatarURL}
               aria-controls="simple-menu"
               aria-haspopup="true"
               onClick={handleClick}

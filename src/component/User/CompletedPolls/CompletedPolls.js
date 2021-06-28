@@ -28,7 +28,7 @@ function CompletedPolls() {
             optionId: optionId,
           });
         });
-        console.log(
+        
           "completedPolls: submittedPolls retrieved" +
             JSON.stringify(tempDocs) +
             " done"

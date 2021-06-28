@@ -10,9 +10,7 @@ const fsDeletePoll = (poll) => {
   pollsRef
     .doc(poll.id)
     .delete()
-    .then(() => {
-      console.log("Poll " + poll.description + " deleted");
-    })
+    .then(() => {})
     .catch((error) => {
       console.error("Error deleting Poll " + poll.description, error);
     });
@@ -36,7 +34,6 @@ function fsAddPoll(poll, polls, setPolls) {
         ...polls,
       ];
       setPolls(newPolls);
-      console.log("Poll added " + poll.description + " ");
     })
     .catch((error) => {
       console.error("Error adding poll " + poll.description + " ", error);
@@ -57,7 +54,6 @@ const fsUpdatePoll = (poll) => {
       options: poll.options,
       updated: firebase.firestore.FieldValue.serverTimestamp(),
     })
-    .then(() => console.log("Poll updated " + JSON.stringify(poll)))
     .catch((error) => {
       console.error("Error updating poll " + JSON.stringify(poll) + " ", error);
     });
