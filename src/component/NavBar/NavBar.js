@@ -17,6 +17,7 @@ import {
   Hidden,
   BottomNavigation,
   BottomNavigationAction,
+  Grid,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import { ReactComponent as ReactLogo } from "../../graphics/logo.svg";
@@ -28,6 +29,8 @@ import CreateIcon from "@material-ui/icons/Create";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import PersonIcon from "@material-ui/icons/Person";
 import PeopleIcon from "@material-ui/icons/People";
+import { Switch, FormControlLabel } from "@material-ui/core";
+import Brightness3Icon from "@material-ui/icons/Brightness3";
 
 // List objects
 const home = { id: "Home", icon: <HomeIcon /> };
@@ -53,7 +56,12 @@ export function BottomNav() {
   const user = auth.user;
   return user !== null ? (
     <Hidden smUp>
-      <BottomNavigation showLabels className={styles.bottom} value={location}>
+      <BottomNavigation
+        showLabels
+        className={styles.bottom}
+        value={location}
+        color="default"
+      >
         {menuItems.map((mItem) => (
           <BottomNavigationAction
             key={mItem.id}
@@ -98,42 +106,76 @@ function NavBar(props) {
 
   return user !== null ? (
     <>
-      <AppBar position="static">
+      <AppBar position="static" color={props.theme ? "default" : "primary"}>
         <Toolbar>
-          <Hidden xsDown>
-            <Tooltip TransitionComponent={Zoom} title="Navigation" arrow>
-              <IconButton color="inherit" onClick={toggleDrawer}>
-                <MenuIcon />
-              </IconButton>
-            </Tooltip>
-          </Hidden>
-          <Tooltip TransitionComponent={Zoom} title="Home" arrow>
-            <Link to="/Home" className={styles.logo}>
-              <ReactLogo className={styles.logo} />
-            </Link>
-          </Tooltip>
-          <Tooltip TransitionComponent={Zoom} title="Account" arrow>
-            <Avatar
-              className={styles.clickable}
-              alt={user.displayName}
-              src={props.avatarURL}
-              aria-controls="simple-menu"
-              aria-haspopup="true"
-              onClick={handleClick}
-            />
-          </Tooltip>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
+          <Grid
+            container
+            direction="row"
+            alignItems="center"
+            className={styles.marginBottom}
           >
-            <MenuItem component={Link} to={"/Settings"} onClick={handleClose}>
-              Settings
-            </MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
-          </Menu>
+            <Grid item container xs={4} alignItems="center">
+              <Hidden xsDown>
+                <Grid item xs={3} md={2}>
+                  <Tooltip TransitionComponent={Zoom} title="Navigation" arrow>
+                    <IconButton onClick={toggleDrawer}>
+                      <MenuIcon className={styles.icon} />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              </Hidden>
+              <Grid item xs={9} md={10}>
+                <Tooltip TransitionComponent={Zoom} title="Dark Mode" arrow>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={props.theme}
+                        onChange={() => props.setTheme(!props.theme)}
+                        name="Preview"
+                        color="primary"
+                      />
+                    }
+                    label={<Brightness3Icon className={styles.icon} />}
+                  />
+                </Tooltip>
+              </Grid>
+            </Grid>
+            <Grid item xs={4}>
+              <Tooltip TransitionComponent={Zoom} title="Home" arrow>
+                <Link to="/Home" className={styles.logo}>
+                  <ReactLogo className={styles.logo} />
+                </Link>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={4}>
+              <Tooltip TransitionComponent={Zoom} title="Account" arrow>
+                <Avatar
+                  className={styles.clickable}
+                  alt={user.displayName}
+                  src={props.avatarURL}
+                  aria-controls="simple-menu"
+                  aria-haspopup="true"
+                  onClick={handleClick}
+                />
+              </Tooltip>
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem
+                  component={Link}
+                  to={"/Settings"}
+                  onClick={handleClose}
+                >
+                  Settings
+                </MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </Grid>
+          </Grid>
         </Toolbar>
       </AppBar>
       <SwipeableDrawer

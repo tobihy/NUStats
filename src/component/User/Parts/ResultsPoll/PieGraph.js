@@ -1,12 +1,10 @@
 import React from "react";
 import { ResponsiveContainer, PieChart, Pie, Tooltip, Cell } from "recharts";
 import styles from "./ResultsPoll.module.css";
-import indigo from "@material-ui/core/colors/indigo";
-
-const dark = indigo[500];
-const light = indigo[100];
+import { useTheme } from "@material-ui/styles";
 
 function PieGraph(props) {
+  const theme = useTheme();
   const label = ({
     cx,
     cy,
@@ -25,7 +23,7 @@ function PieGraph(props) {
       <text
         x={x}
         y={y}
-        fill="#080808"
+        fill={theme.palette.text.primary}
         textAnchor={x > cx ? "start" : "end"}
         verticalanchor="start"
         dominantBaseline="central"
@@ -53,7 +51,7 @@ function PieGraph(props) {
           startAngle={45}
           endAngle={405}
           outerRadius={80}
-          fill="#8884d8"
+          fill={theme.palette.text.primary}
           dataKey={props.variable}
           label={label}
           className={styles.pieWrapper}
@@ -64,7 +62,9 @@ function PieGraph(props) {
                 <Cell
                   key={`cell-${index}`}
                   fill={
-                    props.completed && index === props.optionId ? dark : light
+                    props.completed && index === props.optionId
+                      ? theme.palette.primary.dark
+                      : theme.palette.primary.light
                   }
                 />
               );
@@ -72,7 +72,14 @@ function PieGraph(props) {
             return null;
           })}
         </Pie>
-        <Tooltip />
+        <Tooltip
+          contentStyle={{
+            color: theme.palette.text.primary,
+            backgroundColor: theme.palette.background.paper,
+          }}
+          itemStyle={{ color: theme.palette.text.primary }}
+          cursor={{ fill: theme.palette.background.paper }}
+        />
       </PieChart>
     </ResponsiveContainer>
   );

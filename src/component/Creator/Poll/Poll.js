@@ -13,12 +13,12 @@ import styles from "./Poll.module.css";
 import ClearIcon from "@material-ui/icons/Clear";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
-import PublishOutlinedIcon from "@material-ui/icons/PublishOutlined";
+import PublishIcon from "@material-ui/icons/Publish";
 import { GridPoll, GridPollTwo } from "../../UI/GridPoll/GridPoll";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { fsDeletePoll, fsUpdatePoll } from "../../../firestore/Poll";
 import { fsSubmitPoll } from "../../../firestore/SubmittedPoll";
-import SaveOutlinedIcon from "@material-ui/icons/SaveOutlined";
+import SaveIcon from "@material-ui/icons/Save";
 
 function Poll(props) {
   const { index, poll, polls, setPolls, snackBar } = props;
@@ -55,7 +55,6 @@ function Poll(props) {
   function saveButton() {
     return (
       <Button
-        type="submit"
         size="small"
         color="primary"
         variant="contained"
@@ -64,9 +63,9 @@ function Poll(props) {
           fsUpdatePoll(poll);
           snackBar("Poll successfully saved!");
         }}
+        endIcon={<SaveIcon />}
       >
         Save
-        <SaveOutlinedIcon size="big" />
       </Button>
     );
   }
@@ -79,25 +78,24 @@ function Poll(props) {
         variant="contained"
         disabled={!validation(question)}
         onClick={handleSubmitPoll}
+        endIcon={<PublishIcon />}
       >
         Submit
-        <PublishOutlinedIcon size="big" />
       </Button>
     );
   }
 
   function deleteButton() {
     return (
-      <Button
+      <IconButton
         type="submit"
         size="small"
         color="secondary"
-        variant="contained"
+        className={styles.icon}
         onClick={handleDeletePoll}
       >
-        Delete
-        <DeleteOutlineIcon size="big" />
-      </Button>
+        <DeleteIcon />
+      </IconButton>
     );
   }
 
@@ -232,6 +230,7 @@ function Poll(props) {
               onChange={(event) => handleEditPoll(event, event.target.value)}
             />
           }
+          button={deleteButton()}
         />
 
         {options.map((option) => (
@@ -262,7 +261,7 @@ function Poll(props) {
                   className={styles.icon}
                   onClick={() => setOptionToDelete(option)}
                 >
-                  <ClearIcon size="big" />
+                  <ClearIcon />
                 </IconButton>
               </form>
             }
@@ -343,7 +342,6 @@ function Poll(props) {
           <>
             <ButtonGroup>
               {saveButton()}
-              {deleteButton()}
               {submitButton()}
             </ButtonGroup>
           </>

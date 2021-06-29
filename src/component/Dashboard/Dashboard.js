@@ -1,4 +1,4 @@
-import { Grid, Typography, Card, ListItem } from "@material-ui/core";
+import { Grid, Typography, Card, ListItem, List } from "@material-ui/core";
 import {
   CartesianGrid,
   XAxis,
@@ -12,6 +12,7 @@ import firebase from "../../auth/AuthHook";
 import { useEffect, useState } from "react";
 // eslint-disable-next-line
 import styles from "./Dashboard.module.css";
+import { useTheme } from "@material-ui/styles";
 
 function GridRectangle(props) {
   return (
@@ -28,11 +29,11 @@ function GridRow(props) {
   return (
     <>
       <ListItem
-        item
+        key={props.index}
         xs={12}
         disableGutters
-        divider
         dense
+        divider={props.index < props.length - 1}
         button
         disableRipple
         disableTouchRipple
@@ -45,6 +46,7 @@ function GridRow(props) {
 }
 
 function Dashboard() {
+  const theme = useTheme();
   const [submittedPolls, setSubmittedPolls] = useState([]);
   const [mySubmittedPolls, setMySubmittedPolls] = useState([]);
   const [randomPoll, setMyRandomPoll] = useState({});
@@ -154,13 +156,17 @@ function Dashboard() {
       <Grid container spacing={2} justify="center">
         <Grid container item direction="row" spacing={2} alignItems="stretch">
           <GridRectangle title={"Trending Polls"}>
-            {submittedPolls.map((poll, index) => (
-              <GridRow
-                key={index}
-                description={poll.description}
-                number={poll.pollCount}
-              />
-            ))}
+            <List>
+              {submittedPolls.map((poll, index) => (
+                <GridRow
+                  key={index}
+                  description={poll.description}
+                  number={poll.pollCount}
+                  length={submittedPolls.length}
+                  index={index}
+                />
+              ))}
+            </List>
           </GridRectangle>
           <GridRectangle title={"My Polls"}>
             {mySubmittedPolls.length === 0 ? (
@@ -169,13 +175,17 @@ function Dashboard() {
                 Drafts!
               </Typography>
             ) : (
-              mySubmittedPolls.map((poll, index) => (
-                <GridRow
-                  key={index}
-                  description={poll.description}
-                  number={poll.pollCount}
-                />
-              ))
+              <List>
+                {mySubmittedPolls.map((poll, index) => (
+                  <GridRow
+                    key={index}
+                    description={poll.description}
+                    number={poll.pollCount}
+                    length={mySubmittedPolls.length}
+                    index={index}
+                  />
+                ))}
+              </List>
             )}
           </GridRectangle>
         </Grid>
@@ -183,9 +193,22 @@ function Dashboard() {
           <ResponsiveContainer aspect={1.618}>
             <LineChart data={data} margin={{ top: 20, right: 50 }}>
               <CartesianGrid strokeDasharray="2 2" />
-              <XAxis dataKey="month" />
-              <YAxis dataKey="polls" />
-              <Tooltip />
+              <XAxis
+                dataKey="month"
+                tick={{ fill: theme.palette.text.primary }}
+              />
+              <YAxis
+                dataKey="polls"
+                tick={{ fill: theme.palette.text.primary }}
+              />
+              <Tooltip
+                contentStyle={{
+                  color: theme.palette.text.primary,
+                  backgroundColor: theme.palette.background.paper,
+                }}
+                itemStyle={{ color: theme.palette.text.primary }}
+                cursor={{ fill: theme.palette.background.paper }}
+              />
               <Line type="monotone" dataKey="polls" stroke="#8884d8" />
             </LineChart>
           </ResponsiveContainer>

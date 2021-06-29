@@ -19,7 +19,7 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 
-function PageHome() {
+function PageHome(props) {
   const [avatarURL, setAvatarURL] = useState("");
   const [username, setUsername] = useState("");
   const auth = useAuth();
@@ -47,7 +47,11 @@ function PageHome() {
   return (
     <BrowserRouter>
       <main>
-        <NavBar avatarURL={avatarURL} />
+        <NavBar
+          avatarURL={avatarURL}
+          setTheme={props.setTheme}
+          theme={props.theme}
+        />
         <Container maxWidth="md" className={styles.container}>
           <Switch>
             <Route exact path="/" render={() => <Dashboard />} />

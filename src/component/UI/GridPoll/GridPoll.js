@@ -16,7 +16,14 @@ export function GridPoll(props) {
 
 export function GridPollTwo(props) {
   return (
-    <Grid container item xs={12} justify="space-between" className={styles.row}>
+    <Grid
+      container
+      item
+      xs={12}
+      justify="space-between"
+      alignItems="center"
+      className={styles.row}
+    >
       <Grid item xs={"auto"}>
         {props.first}
       </Grid>

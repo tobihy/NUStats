@@ -6,6 +6,7 @@ import styles from "./PollManager.module.css";
 import { fsAddPoll } from "../../../firestore/Poll";
 import firebase from "../../../auth/AuthHook";
 import SnackBar from "../../UI/SnackBar";
+import { GridPoll } from "../../UI/GridPoll/GridPoll";
 
 export default function PollManager() {
   const [open, setOpen] = useState(false);
@@ -34,7 +35,6 @@ export default function PollManager() {
         querySnapshot.forEach((doc) => {
           tempDocs.push({ id: doc.id, ...doc.data() });
         });
-
         setPolls(tempDocs);
       });
   }, []);
@@ -88,22 +88,30 @@ export default function PollManager() {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Rectangle>
+          <Rectangle square>
             <form onSubmit={handleAddPoll} className={styles.forms}>
-              <TextField
-                className={styles.field}
-                label="Poll"
-                value={newDescription}
-                onChange={(event) => setNewDescription(event.target.value)}
+              <GridPoll
+                textField={
+                  <TextField
+                    fullWidth
+                    className={styles.field}
+                    placeholder="Poll"
+                    value={newDescription}
+                    onChange={(event) => setNewDescription(event.target.value)}
+                  />
+                }
+                button={
+                  <Button
+                    className={styles.button}
+                    size="small"
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                  >
+                    Add
+                  </Button>
+                }
               />
-              <Button
-                className={styles.button}
-                type="submit"
-                variant="contained"
-                color="primary"
-              >
-                Add
-              </Button>
             </form>
           </Rectangle>
         </Grid>

@@ -5,7 +5,7 @@ import styles from "./Rectangle.module.css";
 function Rectangle(props) {
   const { children } = props;
   return (
-    <Paper className={styles.rectangle} elevation={3}>
+    <Paper className={styles.rectangle} elevation={0} square>
       {children}
     </Paper>
   );

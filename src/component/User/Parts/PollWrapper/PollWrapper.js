@@ -113,7 +113,7 @@ function PollWrapper(props) {
   return (
     <>
       <Grid item>
-        <Card>
+        <Card square>
           <CardActionArea component={Link} to={"/Users/" + pollCopy.creator}>
             <CardHeader
               avatar={

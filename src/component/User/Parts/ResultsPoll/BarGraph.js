@@ -9,17 +9,14 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import indigo from "@material-ui/core/colors/indigo";
-
-const dark = indigo[400];
-const light = indigo[100];
+import { useTheme } from "@material-ui/styles";
 
 let ctx;
 
 export const measureText14HelveticaNeue = (text) => {
   if (!ctx) {
     ctx = document.createElement("canvas").getContext("2d");
-    ctx.font = "14px 'Roboto";
+    ctx.font = "14px 'Poppins";
   }
 
   return ctx.measureText(text).width;
@@ -28,6 +25,7 @@ export const measureText14HelveticaNeue = (text) => {
 const BAR_AXIS_SPACE = 10;
 
 function BarGraph(props) {
+  const theme = useTheme();
   const { data, xKey, yKey, total, completed, optionId } = props;
   const maxTextWidth = useMemo(
     () =>
@@ -75,7 +73,7 @@ function BarGraph(props) {
           type="category"
           axisLine={false}
           tickLine={false}
-          tick={{ fill: "#080808" }}
+          tick={{ fill: theme.palette.text.primary }}
           tickFormatter={(str) =>
             str.length > 30 ? str.substring(0, 27) + "..." : str
           }
@@ -93,17 +91,28 @@ function BarGraph(props) {
           }
           mirror
           tick={{
-            fill: "#080808",
+            fill: theme.palette.text.primary,
             transform: `translate(${maxTextWidth + BAR_AXIS_SPACE}, 0)`,
           }}
         />
-        <Tooltip />
+        <Tooltip
+          contentStyle={{
+            color: theme.palette.text.primary,
+            backgroundColor: theme.palette.background.paper,
+          }}
+          itemStyle={{ color: theme.palette.text.primary }}
+          cursor={{ fill: theme.palette.background.paper }}
+        />
         <Bar dataKey={yKey} minPointSize={2} barSize={32}>
           {data.map((d, idx) => {
             return (
               <Cell
                 key={d[xKey]}
-                fill={completed && idx === optionId ? dark : light}
+                fill={
+                  completed && idx === optionId
+                    ? theme.palette.primary.dark
+                    : theme.palette.primary.light
+                }
               />
             );
           })}
