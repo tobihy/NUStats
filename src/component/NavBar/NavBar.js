@@ -113,18 +113,31 @@ function NavBar(props) {
             direction="row"
             alignItems="center"
             className={styles.marginBottom}
+            spacing={0}
           >
-            <Grid item container xs={4} alignItems="center">
+            <Grid
+              item
+              container
+              direction="row"
+              xs={4}
+              alignItems="center"
+              justify="flex-start"
+            >
               <Hidden xsDown>
-                <Grid item xs={3} md={2}>
+                <Grid item xs="auto">
                   <Tooltip TransitionComponent={Zoom} title="Navigation" arrow>
-                    <IconButton onClick={toggleDrawer}>
+                    <IconButton
+                      onClick={toggleDrawer}
+                      color="default"
+                      edge="start"
+                      className={styles.iconButton}
+                    >
                       <MenuIcon className={styles.icon} />
                     </IconButton>
                   </Tooltip>
                 </Grid>
               </Hidden>
-              <Grid item xs={9} md={10}>
+              <Grid item xs="auto">
                 <Tooltip TransitionComponent={Zoom} title="Dark Mode" arrow>
                   <FormControlLabel
                     control={
@@ -183,6 +196,7 @@ function NavBar(props) {
         open={drawer}
         onClose={toggleDrawer}
         onOpen={toggleDrawer}
+        color="default"
       >
         <List style={{ width: "275px", padding: 0 }}>
           {menuItems.map((mItem) => (

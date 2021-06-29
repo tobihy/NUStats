@@ -35,22 +35,20 @@ function PollWrapper(props) {
   }
 
   useEffect(() => {
-    if (username === "") {
-      const userRef = firebase
-        .firestore()
-        .collection("userInfo")
-        .doc(pollCopy.creator)
-        .get();
+    const userRef = firebase
+      .firestore()
+      .collection("userInfo")
+      .doc(pollCopy.creator)
+      .get();
 
-      userRef.then((doc) => {
-        if (doc.exists) {
-          setUsername(doc.data().username);
-          if (doc.data().profilepic !== undefined) {
-            setAvatarURL(doc.data().profilepic);
-          }
+    userRef.then((doc) => {
+      if (doc.exists) {
+        setUsername(doc.data().username);
+        if (doc.data().profilepic !== undefined) {
+          setAvatarURL(doc.data().profilepic);
         }
-      });
-    }
+      }
+    });
     const tempDoc = [];
     poll.options.forEach((option) =>
       tempDoc.push({
@@ -59,9 +57,11 @@ function PollWrapper(props) {
       })
     );
     setData(tempDoc);
-
-    //eslint-disable-next-line
-  }, [poll]);
+    return () => {
+      setUsername("");
+      setAvatarURL("");
+    };
+  }, [poll, pollCopy.creator]);
 
   function timestamp() {
     const diffInMs = Math.abs(

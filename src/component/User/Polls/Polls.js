@@ -52,6 +52,7 @@ function Polls() {
 
       setAllPolls(tempDocs);
     });
+    return () => setAllPolls([]);
   }, [selectedIndex, view]);
 
   function View(props) {

@@ -4,6 +4,9 @@ import styles from "./ResultsPoll.module.css";
 import { useTheme } from "@material-ui/styles";
 
 function PieGraph(props) {
+  const filteredData = props.data.filter(
+    (entry) => entry["Number of Responses"] !== 0
+  );
   const theme = useTheme();
   const label = ({
     cx,
@@ -29,9 +32,9 @@ function PieGraph(props) {
         dominantBaseline="central"
         width={25}
       >
-        {props.data[index].name.length > 18
-          ? props.data[index].name.substring(0, 15) + "..."
-          : props.data[index].name}
+        {filteredData[index].name.length > 18
+          ? filteredData[index].name.substring(0, 15) + "..."
+          : filteredData[index].name}
         : {value} {" ("}
         {((value / props.total) * 100).toFixed(0)}
         {"%)"}
@@ -43,9 +46,7 @@ function PieGraph(props) {
     <ResponsiveContainer height={300} width="95%">
       <PieChart height={250}>
         <Pie
-          data={props.data.filter(
-            (entry) => entry["Number of Responses"] !== 0
-          )}
+          data={filteredData}
           cx="50%"
           cy="50%"
           startAngle={45}
@@ -56,21 +57,16 @@ function PieGraph(props) {
           label={label}
           className={styles.pieWrapper}
         >
-          {props.data.map((entry, index) => {
-            if (entry["Number of Responses"] !== 0) {
-              return (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={
-                    props.completed && index === props.optionId
-                      ? theme.palette.primary.dark
-                      : theme.palette.primary.light
-                  }
-                />
-              );
-            }
-            return null;
-          })}
+          {filteredData.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={
+                props.completed && index === props.optionId
+                  ? theme.palette.primary.dark
+                  : theme.palette.primary.light
+              }
+            />
+          ))}
         </Pie>
         <Tooltip
           contentStyle={{
