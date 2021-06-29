@@ -9,6 +9,7 @@ import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import deepPurple from "@material-ui/core/colors/deepPurple";
 import pink from "@material-ui/core/colors/pink";
+import grey from "@material-ui/core/colors/grey";
 
 function AppBody() {
   const auth = useAuth();
@@ -65,6 +66,9 @@ function AppBody() {
         light: pink[300],
         main: pink[500],
         dark: pink[700],
+      },
+      background: {
+        default: grey[200],
       },
       contrastThreshold: 3,
       tonalOffset: 0.5,
