@@ -68,7 +68,7 @@ function AppBody() {
         dark: pink[700],
       },
       background: {
-        default: grey[200],
+        default: grey[100],
       },
       contrastThreshold: 3,
       tonalOffset: 0.5,
