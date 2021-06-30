@@ -125,16 +125,22 @@ function NavBar(props) {
             >
               <Hidden xsDown>
                 <Grid item xs="auto">
-                  <Tooltip TransitionComponent={Zoom} title="Navigation" arrow>
-                    <IconButton
-                      onClick={toggleDrawer}
-                      color="default"
-                      edge="start"
-                      className={styles.iconButton}
+                  <div className={styles.iconButton}>
+                    <Tooltip
+                      TransitionComponent={Zoom}
+                      title="Navigation"
+                      arrow
                     >
-                      <MenuIcon className={styles.icon} />
-                    </IconButton>
-                  </Tooltip>
+                      <IconButton
+                        onClick={toggleDrawer}
+                        color="default"
+                        edge="start"
+                        className={styles.iconButton}
+                      >
+                        <MenuIcon className={styles.icon} />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
                 </Grid>
               </Hidden>
               <Grid item xs="auto">

@@ -9,6 +9,7 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
+import { Paper, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 
 let ctx;
@@ -59,6 +60,18 @@ function BarGraph(props) {
     );
   };
 
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <Paper variant="outlined" square style={{ padding: "0.5rem" }}>
+          <Typography variant="subtitle2">{label}</Typography>
+          <Typography variant="body2">{`Number of responses : ${payload[0].value}`}</Typography>
+        </Paper>
+      );
+    }
+    return null;
+  };
+
   return (
     <ResponsiveContainer height={50 * data.length} width="95%">
       <BarChart
@@ -96,11 +109,7 @@ function BarGraph(props) {
           }}
         />
         <Tooltip
-          contentStyle={{
-            color: theme.palette.text.primary,
-            backgroundColor: theme.palette.background.paper,
-          }}
-          itemStyle={{ color: theme.palette.text.primary }}
+          content={CustomTooltip}
           cursor={{ fill: theme.palette.background.paper }}
         />
         <Bar dataKey={yKey} minPointSize={2} barSize={32}>

@@ -1,6 +1,7 @@
 import React from "react";
 import { ResponsiveContainer, PieChart, Pie, Tooltip, Cell } from "recharts";
 import styles from "./ResultsPoll.module.css";
+import { Paper, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
 
 function PieGraph(props) {
@@ -42,6 +43,19 @@ function PieGraph(props) {
     );
   };
 
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <Paper variant="outlined" square style={{ padding: "0.5rem" }}>
+          <Typography variant="subtitle2">{payload[0].name}</Typography>
+          <Typography variant="body2">{`Number of responses : ${payload[0].value}`}</Typography>
+        </Paper>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <ResponsiveContainer height={300} width="95%">
       <PieChart height={250}>
@@ -61,7 +75,7 @@ function PieGraph(props) {
             <Cell
               key={`cell-${index}`}
               fill={
-                props.completed && index === props.optionId
+                props.completed && entry === props.data[props.optionId]
                   ? theme.palette.primary.dark
                   : theme.palette.primary.light
               }
@@ -69,12 +83,13 @@ function PieGraph(props) {
           ))}
         </Pie>
         <Tooltip
-          contentStyle={{
-            color: theme.palette.text.primary,
-            backgroundColor: theme.palette.background.paper,
-          }}
-          itemStyle={{ color: theme.palette.text.primary }}
-          cursor={{ fill: theme.palette.background.paper }}
+          // contentStyle={{
+          //   color: theme.palette.text.primary,
+          //   backgroundColor: theme.palette.background.paper,
+          // }}
+          // itemStyle={{ color: theme.palette.text.primary }}
+          // cursor={{ fill: theme.palette.background.paper }}
+          content={CustomTooltip}
         />
       </PieChart>
     </ResponsiveContainer>

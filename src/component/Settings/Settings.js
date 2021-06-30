@@ -106,7 +106,7 @@ function Settings(props) {
   }
 
   const [file, setFile] = useState("");
-  const [fileLink, setFileLink] = useState("");
+  const [fileLink, setFileLink] = useState(props.avatarURL);
   const [upImg, setUpImg] = useState();
   const imgRef = useRef(null);
   const previewCanvasRef = useRef(null);

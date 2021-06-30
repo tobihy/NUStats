@@ -55,41 +55,6 @@ function Polls() {
     return () => setAllPolls([]);
   }, [selectedIndex, view]);
 
-  function View(props) {
-    return (
-      <>
-        <Grid
-          container
-          direction="column"
-          justify="center"
-          alignItems="stretch"
-          spacing={2}
-        >
-          {props.data}
-        </Grid>
-      </>
-    );
-  }
-
-  function all() {
-    return allPolls.map((poll, index) => (
-      <PollWrapper poll={poll} key={index} />
-    ));
-  }
-
-  function uncompleted() {
-    return allPolls.map(
-      (poll, index) =>
-        !poll.completed && <PollWrapper poll={poll} key={index} />
-    );
-  }
-
-  function completed() {
-    return allPolls.map(
-      (poll, index) => poll.completed && <PollWrapper poll={poll} key={index} />
-    );
-  }
-
   return (
     <>
       <Tabs
@@ -108,9 +73,27 @@ function Polls() {
         setSelectedIndex={setSelectedIndex}
         selectedIndex={selectedIndex}
       />
-      {view === 0 && <View data={all()} />}
-      {view === 1 && <View data={uncompleted()} />}
-      {view === 2 && <View data={completed()} />}
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="stretch"
+        spacing={2}
+      >
+        {view === 0
+          ? allPolls.map((poll, index) => (
+              <PollWrapper poll={poll} key={index} />
+            ))
+          : view === 1
+          ? allPolls.map(
+              (poll, index) =>
+                !poll.completed && <PollWrapper poll={poll} key={index} />
+            )
+          : allPolls.map(
+              (poll, index) =>
+                poll.completed && <PollWrapper poll={poll} key={index} />
+            )}
+      </Grid>
     </>
   );
 }
