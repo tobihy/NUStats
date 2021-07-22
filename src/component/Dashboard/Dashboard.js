@@ -1,4 +1,11 @@
-import { Grid, Typography, Card, ListItem, List } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  Card,
+  ListItem,
+  List,
+  Dialog,
+} from "@material-ui/core";
 import {
   CartesianGrid,
   XAxis,
@@ -13,6 +20,9 @@ import { useEffect, useState } from "react";
 // eslint-disable-next-line
 import styles from "./Dashboard.module.css";
 import { useTheme } from "@material-ui/styles";
+import PollWrapper from "../User/Parts/PollWrapper";
+// eslint-disable-next-line
+import { BrowserRouter as Route, Link } from "react-router-dom";
 
 function GridRectangle(props) {
   return (
@@ -25,31 +35,35 @@ function GridRectangle(props) {
   );
 }
 
-function GridRow(props) {
-  return (
-    <>
-      <ListItem
-        key={props.index}
-        xs={12}
-        disableGutters
-        dense
-        divider={props.index < props.length - 1}
-        button
-        disableRipple
-        disableTouchRipple
-        className={styles.cursor}
-      >
-        <Typography variant="body1">{props.description}</Typography>
-      </ListItem>
-    </>
-  );
-}
-
 function Dashboard() {
   const theme = useTheme();
   const [submittedPolls, setSubmittedPolls] = useState([]);
   const [mySubmittedPolls, setMySubmittedPolls] = useState([]);
-  const [randomPoll, setMyRandomPoll] = useState({});
+  const [poll, setPoll] = useState({});
+  const [open, setOpen] = useState(false);
+  const [randomPoll, setMyRandomPoll] = useState();
+
+  function GridRow(props) {
+    return (
+      <>
+        <ListItem
+          key={props.index}
+          xs={12}
+          disableGutters
+          dense
+          divider={props.index < props.length - 1}
+          button
+          className={styles.cursor}
+          onClick={() => {
+            setPoll(props.poll);
+            setOpen(true);
+          }}
+        >
+          <Typography variant="body2">{props.poll.description}</Typography>
+        </ListItem>
+      </>
+    );
+  }
 
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
@@ -63,10 +77,7 @@ function Dashboard() {
       .then((querySnapshot) => {
         const tempDocs = [];
         querySnapshot.forEach((pollRef) => {
-          tempDocs.push({
-            description: pollRef.data().description,
-            pollCount: pollRef.data().pollCount,
-          });
+          tempDocs.push(pollRef.data());
         });
         setSubmittedPolls(tempDocs);
       });
@@ -82,10 +93,7 @@ function Dashboard() {
       snapShot.then((querySnapshot) => {
         const tempDocs = [];
         querySnapshot.forEach((pollRef) => {
-          tempDocs.push({
-            description: pollRef.data().description,
-            pollCount: pollRef.data().pollCount,
-          });
+          tempDocs.push(pollRef.data());
         });
         setMySubmittedPolls(tempDocs);
       });
@@ -111,6 +119,7 @@ function Dashboard() {
                 Math.random() * tempPoll.options.length
               );
               setMyRandomPoll({
+                poll: tempPoll,
                 description: tempPoll.description,
                 pollCount: tempPoll.pollCount,
                 optionCount: tempPoll.optionCounts[randomOption],
@@ -137,6 +146,7 @@ function Dashboard() {
   }, []);
 
   function didYouKnow(poll) {
+    console.log(poll);
     return (
       poll &&
       poll.optionCount +
@@ -160,8 +170,7 @@ function Dashboard() {
               {submittedPolls.map((poll, index) => (
                 <GridRow
                   key={index}
-                  description={poll.description}
-                  number={poll.pollCount}
+                  poll={poll}
                   length={submittedPolls.length}
                   index={index}
                 />
@@ -169,24 +178,33 @@ function Dashboard() {
             </List>
           </GridRectangle>
           <GridRectangle title={"My Polls"}>
-            {mySubmittedPolls.length === 0 ? (
-              <Typography variant="body1">
-                You have not submitted any polls, try submitting one under
-                Drafts!
-              </Typography>
-            ) : (
-              <List>
-                {mySubmittedPolls.map((poll, index) => (
+            <List>
+              {mySubmittedPolls.length === 0 ? (
+                <ListItem
+                  xs={12}
+                  disableGutters
+                  dense
+                  button
+                  className={styles.cursor}
+                  component={Link}
+                  to={"/Drafts"}
+                >
+                  <Typography variant="body2">
+                    You have not submitted any polls, try submitting one under
+                    Drafts!
+                  </Typography>
+                </ListItem>
+              ) : (
+                mySubmittedPolls.map((poll, index) => (
                   <GridRow
                     key={index}
-                    description={poll.description}
-                    number={poll.pollCount}
+                    poll={poll}
                     length={mySubmittedPolls.length}
                     index={index}
                   />
-                ))}
-              </List>
-            )}
+                ))
+              )}
+            </List>
           </GridRectangle>
         </Grid>
         <GridRectangle title={"Number of Polls Answered"}>
@@ -214,9 +232,51 @@ function Dashboard() {
           </ResponsiveContainer>
         </GridRectangle>
         <GridRectangle title={"Did you know?"}>
-          <Typography variant="body1">{didYouKnow(randomPoll)}</Typography>
+          <List>
+            {randomPoll === undefined ? (
+              <ListItem
+                xs={12}
+                disableGutters
+                dense
+                button
+                className={styles.cursor}
+                component={Link}
+                to={"/Drafts"}
+              >
+                <Typography variant="body2">
+                  No one has posted any polls. You can post one now under
+                  Drafts!
+                </Typography>
+              </ListItem>
+            ) : (
+              <ListItem
+                xs={12}
+                disableGutters
+                dense
+                button
+                className={styles.cursor}
+                onClick={() => {
+                  setPoll(randomPoll.poll);
+                  setOpen(true);
+                }}
+              >
+                <Typography variant="body2">
+                  {didYouKnow(randomPoll)}
+                </Typography>
+              </ListItem>
+            )}
+          </List>
         </GridRectangle>
       </Grid>
+      <Dialog
+        onClose={() => setOpen(false)}
+        aria-labelledby="simple-dialog-title"
+        open={open}
+        fullWidth
+        maxWidth={"md"}
+      >
+        <PollWrapper poll={poll} />
+      </Dialog>
     </>
   );
 }

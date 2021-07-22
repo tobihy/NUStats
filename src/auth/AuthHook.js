@@ -3,7 +3,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
-import { initialiseUser } from "../firestore/UserInfo";
+import { initialiseUser, userExists } from "../firestore/UserInfo";
 
 // NUStats Firebase credentials
 firebase.initializeApp({
@@ -71,8 +71,48 @@ function useProvideAuth() {
       .then((response) => {
         initialiseUser(response.user.uid, username, email);
         setUser(response.user);
-
         return response.user;
+      });
+  };
+
+  // Check if the email url link received is a sign in with email link
+  const checkEmailLink = (emailLink) => {
+    return firebase.auth().isSignInWithEmailLink(emailLink);
+  };
+
+  // Sends a sign in link to the given email address
+  const sendEmailLink = (email) => {
+    return firebase
+      .auth()
+      .sendSignInLinkToEmail(email, {
+        url: "http://localhost:3000/Login",
+        handleCodeInApp: true,
+      })
+      .then(() => {
+        // Save the users email to verify it after they access their email
+        window.localStorage.setItem("emailForSignIn", email);
+        console.log("Email link sent");
+      });
+  };
+
+  const passwordlessSignIn = (email, emailLink) => {
+    const newUser = !userExists(email);
+    return firebase
+      .auth()
+      .signInWithEmailLink(email, emailLink)
+      .then((response) => {
+        // Only for new users
+        if (newUser === true) {
+          initialiseUser(response.user.uid, email);
+        }
+
+        setUser(response.user);
+        window.localStorage.removeItem("emailForSignIn");
+        console.log("Passwordless sign in successful");
+        return response.user;
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -128,6 +168,9 @@ function useProvideAuth() {
     googleSignIn,
     signin,
     signup,
+    checkEmailLink,
+    sendEmailLink,
+    passwordlessSignIn,
     signout,
     sendPasswordResetEmail,
     confirmPasswordReset,

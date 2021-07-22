@@ -73,7 +73,11 @@ function PollWrapper(props) {
 
     if (diffInMs / dayInMs > 7) {
       const dateInMillis = pollCopy.submissionTime.seconds * 1000;
-      return new Date(dateInMillis).toDateString();
+      return new Date(dateInMillis).toLocaleDateString("en-SG", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
     } else if (diffInMs / hoursInMs > 24) {
       const days = Math.floor(diffInMs / dayInMs);
       return days === 1 ? "Yesterday" : days + " days ago";
@@ -130,7 +134,7 @@ function PollWrapper(props) {
             />
           </CardActionArea>
           <CardContent className={styles.cardcontent}>
-            <Typography variant="subtitle1">{pollCopy.description}</Typography>
+            <Typography variant="body2">{pollCopy.description}</Typography>
             {pollCopy.completed ? (
               <ResultsPoll poll={pollCopy} data={data} />
             ) : (
@@ -143,7 +147,7 @@ function PollWrapper(props) {
               alignItems="center"
             >
               <Grid item>
-                <Typography variant="subtitle1">
+                <Typography variant="body2">
                   {pollCopy.pollCount === 0
                     ? "There are no responses yet."
                     : pollCopy.pollCount === 1
@@ -161,7 +165,9 @@ function PollWrapper(props) {
                         color="primary"
                       />
                     }
-                    label="Show Results"
+                    label={
+                      <Typography variant="body2">Show Results</Typography>
+                    }
                     labelPlacement="start"
                   />
                 ) : null}

@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { FormControlLabel, Radio, RadioGroup, Button } from "@material-ui/core";
+import {
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Button,
+  List,
+  ListItem,
+  Typography,
+} from "@material-ui/core";
 import styles from "./UncompletedPoll.module.css";
 import DoneIcon from "@material-ui/icons/Done";
 import { fsSubmitResponse } from "../../../../firestore/Responses";
@@ -35,15 +43,29 @@ function UncompletedPoll(props) {
           onChange={handleChange}
           className={styles.opts}
         >
-          {poll.options.map((option, index) => (
-            <FormControlLabel
-              key={option.id}
-              className={styles.opts}
-              value={option.description}
-              control={<Radio />}
-              label={option.description}
-            />
-          ))}
+          <List disablePadding dense>
+            {poll.options.map((option, index) => (
+              <ListItem
+                key={option.id}
+                className={styles.removeGutter}
+                button
+                dense
+                disableRipple
+                disableTouchRipple
+              >
+                <FormControlLabel
+                  className={styles.opts}
+                  value={option.description}
+                  control={<Radio />}
+                  label={
+                    <Typography variant="body2">
+                      {option.description}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
         </RadioGroup>
         {value && (
           <div className={styles.button}>

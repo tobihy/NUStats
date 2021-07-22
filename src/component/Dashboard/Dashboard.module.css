@@ -4,5 +4,10 @@
 }
 
 .cursor {
-  cursor: default !important;
+  align-self: flex-start;
+  width: calc(100% + 32px) !important;
+  padding-left: 16px !important;
+  margin-left: -16px !important;
+  margin-right: -16px !important;
+  padding-right: 16px !important;
 }

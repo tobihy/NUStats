@@ -41,6 +41,7 @@ function fsAddPoll(poll, polls, setPolls) {
 }
 
 const fsUpdatePoll = (poll) => {
+  console.log("updated");
   const uid = firebase.auth().currentUser?.uid;
   const pollsRef = firebase
     .firestore()

@@ -1,5 +1,15 @@
 .field {
   width: 100%;
+  padding-bottom: 1rem;
+}
+
+.row {
+  width: 100% !important;
+  height: 3rem;
+}
+
+.fcl {
+  width: 100% !important;
 }
 
 .wrapper {
@@ -14,4 +24,25 @@
 
 .buttonGroup {
   float: right;
+}
+
+.opts {
+  align-items: left;
+  width: calc(100% + 32px);
+  margin-right: -16px !important;
+}
+
+.list {
+  margin-left: -16px !important;
+  margin-right: -16px !important;
+}
+
+.removeGutter {
+  padding-left: 16px !important;
+  margin-right: -16px !important;
+  padding-right: -16px !important;
+}
+
+.adorn {
+  padding-bottom: 0.5rem;
 }

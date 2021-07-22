@@ -8,6 +8,8 @@ import {
   Switch,
   ButtonGroup,
   Typography,
+  List,
+  ListItem,
 } from "@material-ui/core";
 import styles from "./Poll.module.css";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -232,7 +234,6 @@ function Poll(props) {
           }
           button={deleteButton()}
         />
-
         {options.map((option) => (
           <GridPoll
             key={option.id}
@@ -241,7 +242,6 @@ function Poll(props) {
                 placeholder={"Option " + (option.id + 1)}
                 error={optionValidator(option)}
                 helperText={optionHelperText(option)}
-                autoFocus={true}
                 fullWidth
                 value={option.description}
                 onChange={(event) => {
@@ -287,6 +287,7 @@ function Poll(props) {
                   fullWidth
                   value={newOptionText}
                   onChange={(event) => setNewOptionText(event.target.value)}
+                  autoFocus={true}
                 />
               }
               button={
@@ -319,15 +320,25 @@ function Poll(props) {
           value={value}
           onChange={handleChange}
         >
-          {poll.options.map((option) => (
-            <FormControlLabel
-              key={option.id}
-              className={styles.row}
-              value={option.description}
-              control={<Radio />}
-              label={option.description}
-            />
-          ))}
+          <List disablePadding dense className={styles.list}>
+            {poll.options.map((option) => (
+              <ListItem
+                key={option.id}
+                className={styles.removeGutter}
+                button
+                disableRipple
+                disableTouchRipple
+                disableGutters
+              >
+                <FormControlLabel
+                  className={styles.opts}
+                  value={option.description}
+                  control={<Radio />}
+                  label={option.description}
+                />
+              </ListItem>
+            ))}
+          </List>
         </RadioGroup>
       </>
     );

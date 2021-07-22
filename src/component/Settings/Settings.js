@@ -38,7 +38,51 @@ function Settings(props) {
   const handleSaveSettings = (event) => {
     event.preventDefault();
     const userRef = firebase.firestore().collection("userInfo").doc(uid);
-    const saveToFS = async () => {
+
+    const updateUserName = () => {
+      userRef
+        .update({
+          username: username,
+        })
+        .then(() => {})
+        .catch((error) => console.error("Error Saving Settings", error));
+      firebase
+        .firestore()
+        .collection("usernames")
+        .doc(username)
+        .set({ count: 1 });
+      firebase.firestore().collection("usernames").doc(currUsername).delete();
+      setCurrUsername(username);
+    };
+
+    const updateProfilePic = () => {
+      firebase
+        .storage()
+        .ref()
+        .child("profilepics/" + uid + ".jpg")
+        .put(file)
+        .then(() =>
+          firebase
+            .storage()
+            .ref("profilepics")
+            .child(uid + "_200x200.jpeg")
+            .getDownloadURL()
+            .then((url) => {
+              userRef
+                .update({
+                  profilepic: url,
+                })
+                .then(() => {})
+                .catch((error) =>
+                  console.error("Error Saving Settings", error)
+                );
+              setAvatarURL(fileLink);
+              setFileLink(fileLink);
+            })
+        );
+    };
+
+    const updateUserNameAndProfilePic = () => {
       firebase
         .storage()
         .ref()
@@ -73,10 +117,21 @@ function Settings(props) {
               setAvatarURL(fileLink);
               setFileLink(fileLink);
               setCurrUsername(username);
-              snackBar("Settings saved!", "success");
             })
         );
     };
+
+    const saveToFS = async () => {
+      if (file === "") {
+        updateUserName();
+      } else if (username === currUsername) {
+        updateProfilePic();
+      } else {
+        updateUserNameAndProfilePic();
+      }
+      snackBar("Settings saved!", "success");
+    };
+
     if (username !== currUsername) {
       firebase
         .firestore()
@@ -305,8 +360,7 @@ function Settings(props) {
                 color="primary"
                 disabled={
                   (currUsername === username && avatarURL === fileLink) ||
-                  usernameError(username, currUsername) ||
-                  !hide
+                  usernameError(username)
                 }
                 onClick={handleSaveSettings}
                 fullWidth

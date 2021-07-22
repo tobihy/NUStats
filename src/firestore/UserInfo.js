@@ -18,20 +18,46 @@ const initArr = [
   { month: "Dec", polls: 0 },
 ];
 
-export const initialiseUser = (uid, username, email) => {
+export const initialiseUser = (uid, email) => {
+  // Sets the username to be the user's email
+  const defaultUsername = email;
+
   // Updates the collection of usernames in use
-  firebase.firestore().collection("usernames").doc(username).set({ count: 1 });
+  firebase
+    .firestore()
+    .collection("usernames")
+    .doc(defaultUsername)
+    .set({ count: 1 });
 
   // Updates the collection of emails in use
   firebase.firestore().collection("emails").doc(email).set({ count: 1 });
 
   // Updates the user's information
   firebase.firestore().collection("userInfo").doc(uid).set({
-    username: username,
+    username: defaultUsername,
     email: email,
     monthArr: initArr,
   });
+
+  console.log("user initialized");
 };
+
+export function userExists(email) {
+  firebase
+    .firestore()
+    .collection("emails")
+    .doc(email)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        console.log("user already exists");
+        return true;
+      } else {
+        console.log("user does not exist");
+        return false;
+      }
+    });
+}
 
 export default function updateSubmitCount(uid) {
   const userInfoRef = firebase.firestore().collection("userInfo").doc(uid);

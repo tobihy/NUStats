@@ -26,6 +26,14 @@ function AppBody() {
   const [username, setUsername] = useState("");
   const [theme, setTheme] = useState(true);
 
+  if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
+    var email = window.localStorage.getItem("emailForSignIn");
+    if (!email) {
+      email = window.prompt("Please provide your email for confirmation");
+    }
+    auth.passwordlessSignIn(email, window.location.href);
+  }
+
   useEffect(() => {
     if (user !== null) {
       const uid = firebase.auth().currentUser?.uid;
