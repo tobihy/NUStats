@@ -85,7 +85,7 @@ function useProvideAuth() {
     return firebase
       .auth()
       .sendSignInLinkToEmail(email, {
-        url: "http://localhost:3000/Login",
+        url: "https://nustats-tobihy.vercel.app/Login",
         handleCodeInApp: true,
       })
       .then(() => {
