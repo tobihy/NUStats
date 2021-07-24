@@ -17,8 +17,6 @@ firebase.initializeApp({
 
 const authContext = createContext();
 
-const authProvider = new firebase.auth.GoogleAuthProvider();
-
 // Provider component that wraps your app and makes auth object ...
 // ... available to any child component that calls useAuth().
 export function ProvideAuth({ children }) {
