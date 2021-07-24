@@ -3,7 +3,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
-import { initialiseUser, userExists } from "../firestore/UserInfo";
+import { initialiseUser } from "../firestore/UserInfo";
 
 // NUStats Firebase credentials
 firebase.initializeApp({
@@ -36,45 +36,6 @@ export const useAuth = () => {
 function useProvideAuth() {
   const [user, setUser] = useState(null);
 
-  // For Google sign ins
-  const googleSignIn = () => {
-    return firebase
-      .auth()
-      .signInWithPopup(authProvider)
-      .then((response) => {
-        setUser(response.user);
-        return response.user;
-      })
-      .catch((error) => {});
-  };
-
-  // For email sign ins
-  const signin = (email, password) => {
-    return firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((response) => {
-        setUser(response.user);
-
-        return response.user;
-      })
-      .catch((error) => {
-        return null;
-      });
-  };
-
-  // For email sign ups
-  const signup = (username, email, password) => {
-    return firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then((response) => {
-        initialiseUser(response.user.uid, username, email);
-        setUser(response.user);
-        return response.user;
-      });
-  };
-
   // Check if the email url link received is a sign in with email link
   const checkEmailLink = (emailLink) => {
     return firebase.auth().isSignInWithEmailLink(emailLink);
@@ -85,7 +46,7 @@ function useProvideAuth() {
     return firebase
       .auth()
       .sendSignInLinkToEmail(email, {
-        url: "https://nustats-tobihy.vercel.app/Login",
+        url: "https://nustats.vercel.app/Login",
         handleCodeInApp: true,
       })
       .then(() => {
@@ -95,53 +56,46 @@ function useProvideAuth() {
       });
   };
 
+  // Starts the passwordless sign in flow
   const passwordlessSignIn = (email, emailLink) => {
-    const newUser = !userExists(email);
-    return firebase
-      .auth()
-      .signInWithEmailLink(email, emailLink)
-      .then((response) => {
-        // Only for new users
-        if (newUser === true) {
-          initialiseUser(response.user.uid, email);
+    firebase
+      .firestore()
+      .collection("emails")
+      .doc(email)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          firebase
+            .auth()
+            .signInWithEmailLink(email, emailLink)
+            .then((response) => {
+              setUser(response.user);
+              window.localStorage.removeItem("emailForSignIn");
+              console.log("Existing user sign in successful");
+              return response.user;
+            });
+        } else {
+          firebase
+            .auth()
+            .signInWithEmailLink(email, emailLink)
+            .then((response) => {
+              initialiseUser(response.user.uid, email);
+              setUser(response.user);
+              window.localStorage.removeItem("emailForSignIn");
+              console.log("New user sign in successful");
+              return response.user;
+            });
         }
-
-        setUser(response.user);
-        window.localStorage.removeItem("emailForSignIn");
-        console.log("Passwordless sign in successful");
-        return response.user;
-      })
-      .catch((error) => {
-        console.log(error);
       });
   };
 
+  // Sign out of the current account
   const signout = () => {
     return firebase
       .auth()
       .signOut()
       .then(() => {
         setUser(null);
-      });
-  };
-
-  // Unused
-  const sendPasswordResetEmail = (email) => {
-    return firebase
-      .auth()
-      .sendPasswordResetEmail(email)
-      .then(() => {
-        return true;
-      });
-  };
-
-  // Unused
-  const confirmPasswordReset = (code, password) => {
-    return firebase
-      .auth()
-      .confirmPasswordReset(code, password)
-      .then(() => {
-        return true;
       });
   };
 
@@ -165,15 +119,10 @@ function useProvideAuth() {
   // Return the user object and auth methods
   return {
     user,
-    googleSignIn,
-    signin,
-    signup,
     checkEmailLink,
     sendEmailLink,
     passwordlessSignIn,
     signout,
-    sendPasswordResetEmail,
-    confirmPasswordReset,
   };
 }
 

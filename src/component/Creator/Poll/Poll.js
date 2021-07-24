@@ -63,7 +63,7 @@ function Poll(props) {
         disabled={!validation(question)}
         onClick={() => {
           fsUpdatePoll(poll);
-          snackBar("Poll successfully saved!");
+          snackBar("Poll saved!");
         }}
         endIcon={<SaveIcon />}
       >
@@ -104,7 +104,7 @@ function Poll(props) {
   /* Handle Poll functions (Delete, Edit (Rename), Submit) */
   function handleDeletePoll(event) {
     event.preventDefault();
-    snackBar("Poll deleted successfully!");
+    snackBar("Poll deleted!");
     const newPolls = polls.filter((i) => i.id !== poll.id);
     fsDeletePoll(poll);
     setPolls(newPolls);
@@ -134,7 +134,7 @@ function Poll(props) {
 
   function handleSubmitPoll(event) {
     event.preventDefault();
-    snackBar("Poll submitted successfully!");
+    snackBar("Poll submitted!");
     fsSubmitPoll(poll);
     fsDeletePoll(poll);
     const newPolls = polls.filter((p) => p.id !== poll.id);
