@@ -36,18 +36,27 @@ function UncompletedPoll(props) {
   return (
     <>
       {poll.nusOnly && !poll.userFromNUS ? (
-        <List dense disablePadding>
+        <List
+          dense
+          disablePadding
+          style={{
+            marginLeft: "-16px",
+            marginRight: "-16px",
+          }}
+        >
           {poll.options.map((option, index) => (
             <ListItem
               key={option.id}
+              button
               disableRipple
               disableTouchRipple
               disableGutters
+              style={{ cursor: "default" }}
             >
               <Typography
                 variant="body2"
                 align="justify"
-                className={styles.descriptionNonNUS}
+                style={{ paddingLeft: "16px", paddingRight: "16px" }}
               >
                 {option.description}
               </Typography>
@@ -70,8 +79,8 @@ function UncompletedPoll(props) {
                   className={styles.removeGutter}
                   button
                   dense
-                  disableRipple
                   disableTouchRipple
+                  disableRipple
                 >
                   <FormControlLabel
                     className={styles.opts}

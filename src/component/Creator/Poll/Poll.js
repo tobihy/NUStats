@@ -231,7 +231,7 @@ function Poll(props) {
     if (question === "") {
       return "Question cannot be left empty";
     } else if (question.length > 200) {
-      return "Maximum characters (200) exceed";
+      return "Maximum characters (200) exceeded";
     } else if (question.length > 190) {
       return question.length + " / 200";
     }
@@ -263,7 +263,6 @@ function Poll(props) {
                 style: {
                   fontSize: 14,
                   fontWeight: "bold",
-                  textAlign: "justify",
                 },
               }} // font size of input text
             />
@@ -286,7 +285,7 @@ function Poll(props) {
                     description: event.target.value,
                   });
                 }}
-                inputProps={{ style: { fontSize: 14, textAlign: "justify" } }} // font size of input text
+                inputProps={{ style: { fontSize: 14 } }} // font size of input text
               />
             }
             button={
@@ -325,7 +324,7 @@ function Poll(props) {
                   value={newOptionText}
                   onChange={(event) => setNewOptionText(event.target.value)}
                   autoFocus={true}
-                  inputProps={{ style: { fontSize: 14, textAlign: "justify" } }} // font size of input text
+                  inputProps={{ style: { fontSize: 14 } }} // font size of input text
                 />
               }
               button={
@@ -358,26 +357,25 @@ function Poll(props) {
           value={value}
           onChange={handleChange}
         >
-          <List disablePadding dense className={styles.list}>
+          <List
+            disablePadding
+            dense
+            style={{ marginLeft: "-16px", marginRight: "-16px" }}
+          >
             {poll.options.map((option) => (
               <ListItem
                 key={option.id}
-                className={styles.removeGutter}
                 button
-                disableRipple
-                disableTouchRipple
+                disableRipple={true}
+                disableTouchRipple={true}
                 disableGutters
               >
                 <FormControlLabel
-                  className={styles.opts}
+                  style={{ paddingLeft: "16px", paddingRight: "16px" }}
                   value={option.description}
                   control={<Radio size="small" />}
                   label={
-                    <Typography
-                      variant="body2"
-                      align="justify"
-                      className={styles.description}
-                    >
+                    <Typography variant="body2" className={styles.description}>
                       {option.description}
                     </Typography>
                   }

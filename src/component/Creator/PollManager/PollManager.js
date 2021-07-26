@@ -37,6 +37,8 @@ export default function PollManager() {
         });
         setPolls(tempDocs);
       });
+
+    return () => setPolls();
   }, []);
 
   /* Adding polls */
