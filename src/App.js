@@ -119,7 +119,7 @@ function AppBody() {
       <NavBar avatarURL={avatarURL} setTheme={setTheme} theme={theme} />
       <Container
         maxWidth="md"
-        style={{ paddingTop: "2.5rem", paddingBottom: "5.5rem" }}
+        style={{ paddingTop: "5rem", paddingBottom: "5.5rem" }}
       >
         {user ? (
           <Redirect to={{ pathname: "/Home" }} />

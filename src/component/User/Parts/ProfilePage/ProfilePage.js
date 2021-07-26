@@ -42,57 +42,69 @@ function ProfilePage(props) {
     const userRef = firebase.firestore().collection("userInfo").doc(uid).get();
 
     userRef.then((doc) => {
-      setFollowersCount(doc.data().followers.length);
-      setFollowingCount(doc.data().followings.length);
-      setFollowed(
-        doc.data().followers.includes(firebase.auth().currentUser?.uid)
-      );
       if (doc.exists) {
         setUsername(doc.data().username);
+        setFollowersCount(
+          doc.data().followers === undefined ? 0 : doc.data().followers.length
+        );
+        setFollowingCount(
+          doc.data().followings === undefined ? 0 : doc.data().followings.length
+        );
+        setFollowed(
+          doc.data().followers === undefined ||
+            firebase.auth().currentUser?.uid === undefined
+            ? false
+            : doc.data().followers.includes(firebase.auth().currentUser?.uid)
+        );
         if (doc.data().profilepic !== undefined) {
           setAvatarURL(doc.data().profilepic);
         }
       }
     }, []);
 
-    const filtered = db
-      .collection("draftSubmittedPolls")
-      .where("creator", "==", uid);
+    if (uid !== undefined) {
+      const filtered = db
+        .collection("draftSubmittedPolls")
+        .where("creator", "==", uid);
 
-    const sorted =
-      selectedIndex < 2
-        ? filtered.orderBy(
-            "submissionTime",
-            selectedIndex === 0 ? "desc" : "asc"
-          )
-        : selectedIndex < 4
-        ? filtered.orderBy("pollCount", selectedIndex === 2 ? "desc" : "asc")
-        : selectedIndex < 6
-        ? filtered.orderBy("likesCount", selectedIndex === 4 ? "desc" : "asc")
-        : filtered.orderBy("description", selectedIndex === 6 ? "asc" : "desc");
+      const sorted =
+        selectedIndex < 2
+          ? filtered.orderBy(
+              "submissionTime",
+              selectedIndex === 0 ? "desc" : "asc"
+            )
+          : selectedIndex < 4
+          ? filtered.orderBy("pollCount", selectedIndex === 2 ? "desc" : "asc")
+          : selectedIndex < 6
+          ? filtered.orderBy("likesCount", selectedIndex === 4 ? "desc" : "asc")
+          : filtered.orderBy(
+              "description",
+              selectedIndex === 6 ? "asc" : "desc"
+            );
 
-    sorted.get().then((querySnapshot) => {
-      const tempDocs = [];
-      querySnapshot.forEach((pollRef) => {
-        const { responses, uids, ...otherProps } = pollRef.data();
-        const filtered = responses.filter((response) => response.uid === uid);
-        if (filtered.length === 0) {
-          tempDocs.push({
-            id: pollRef.id,
-            ...otherProps,
-            completed: false,
-          });
-        } else {
-          tempDocs.push({
-            id: pollRef.id,
-            ...otherProps,
-            completed: true,
-            optionId: filtered.pop().optionId,
-          });
-        }
+      sorted.get().then((querySnapshot) => {
+        const tempDocs = [];
+        querySnapshot.forEach((pollRef) => {
+          const { responses, uids, ...otherProps } = pollRef.data();
+          const filtered = responses.filter((response) => response.uid === uid);
+          if (filtered.length === 0) {
+            tempDocs.push({
+              id: pollRef.id,
+              ...otherProps,
+              completed: false,
+            });
+          } else {
+            tempDocs.push({
+              id: pollRef.id,
+              ...otherProps,
+              completed: true,
+              optionId: filtered.pop().optionId,
+            });
+          }
+        });
+        setMySubmittedPolls(tempDocs);
       });
-      setMySubmittedPolls(tempDocs);
-    });
+    }
   }, [props.uid, userId, selectedIndex]);
 
   const followButton = () => {

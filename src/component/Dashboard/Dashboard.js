@@ -116,7 +116,6 @@ function Dashboard() {
             .get()
             .then((pollSnapshot) => {
               const tempPoll = pollSnapshot.data();
-
               const randomOption = Math.floor(
                 Math.random() * tempPoll.options.length
               );
@@ -148,7 +147,6 @@ function Dashboard() {
   }, []);
 
   function didYouKnow(poll) {
-    console.log(poll);
     return (
       poll &&
       poll.optionCount +

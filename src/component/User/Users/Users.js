@@ -26,8 +26,8 @@ function Users() {
 
   const useStyles = makeStyles((theme) => ({
     sizeAvatar: {
-      height: theme.spacing(20),
-      width: theme.spacing(20),
+      height: theme.spacing(15),
+      width: theme.spacing(15),
       marginLeft: "auto",
       marginRight: "auto",
       marginBottom: "1rem",

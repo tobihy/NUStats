@@ -106,7 +106,7 @@ function NavBar(props) {
 
   return user !== null ? (
     <>
-      <AppBar position="static" color={props.theme ? "default" : "primary"}>
+      <AppBar color={props.theme ? "default" : "primary"}>
         <Toolbar>
           <Grid
             container
