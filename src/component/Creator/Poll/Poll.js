@@ -29,6 +29,7 @@ function Poll(props) {
   const [newOptionText, setNewOptionText] = useState("");
   const [optionToDelete, setOptionToDelete] = useState();
   const [preview, setPreview] = useState(false);
+  const [nusOnly, setNusOnly] = useState(poll.nusOnly);
   const [value, setValue] = useState("");
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -47,9 +48,36 @@ function Poll(props) {
             onChange={togglePreview}
             name="Preview"
             color="primary"
+            size="small"
           />
         }
-        label="Preview"
+        label={<Typography variant="body2">Preview</Typography>}
+      />
+    );
+  }
+
+  function nusOnlySwitch() {
+    return (
+      <FormControlLabel
+        control={
+          <Switch
+            checked={nusOnly}
+            onChange={() => {
+              editPoll(question, options, !nusOnly);
+              setNusOnly(!nusOnly);
+            }}
+            name="NUS Only"
+            color="primary"
+            size="small"
+          />
+        }
+        label={
+          <Typography variant="body2" style={{ lineHeight: 1 }} align="center">
+            NUS
+            <br />
+            Only
+          </Typography>
+        }
       />
     );
   }
@@ -115,12 +143,13 @@ function Poll(props) {
     polls && setOptions(polls[index].options);
   }, [polls.length]); // eslint-disable-line
 
-  function editPoll(description, options) {
+  function editPoll(description, options, nusOnly) {
     const newPoll = {
       id: poll.id,
       description: description,
       options: options,
       update: Date.now(),
+      nusOnly: nusOnly,
     };
     const newPolls = polls.map((p) => (p.id === poll.id ? newPoll : p));
     setPolls(newPolls);
@@ -129,7 +158,7 @@ function Poll(props) {
   function handleEditPoll(event, qns) {
     event.preventDefault();
     setQuestion(qns);
-    editPoll(qns, options);
+    editPoll(qns, options, nusOnly);
   }
 
   function handleSubmitPoll(event) {
@@ -153,7 +182,7 @@ function Poll(props) {
     ];
     setOptions(newOptions);
     setNewOptionText("");
-    editPoll(question, newOptions);
+    editPoll(question, newOptions, nusOnly);
   }
 
   function handleDeleteOption(event) {
@@ -161,14 +190,14 @@ function Poll(props) {
     const newOptions = options.filter((i) => i.id !== optionToDelete.id);
     newOptions.forEach((opt, index) => (opt.id = index));
     setOptions(newOptions);
-    editPoll(question, newOptions);
+    editPoll(question, newOptions, nusOnly);
   }
 
   function handleEditOption(event, option) {
     event.preventDefault();
     const newOptions = options.map((o) => (o.id === option.id ? option : o));
     setOptions(newOptions);
-    editPoll(question, newOptions);
+    editPoll(question, newOptions, nusOnly);
   }
 
   function optionValidator(option) {
@@ -223,13 +252,20 @@ function Poll(props) {
         <GridPoll
           textField={
             <TextField
+              multiline
               placeholder={"Poll"}
               value={question}
               error={questionValidator(question)}
               helperText={questionHelperText(question)}
               fullWidth
-              variant="outlined"
               onChange={(event) => handleEditPoll(event, event.target.value)}
+              inputProps={{
+                style: {
+                  fontSize: 14,
+                  fontWeight: "bold",
+                  textAlign: "justify",
+                },
+              }} // font size of input text
             />
           }
           button={deleteButton()}
@@ -250,6 +286,7 @@ function Poll(props) {
                     description: event.target.value,
                   });
                 }}
+                inputProps={{ style: { fontSize: 14, textAlign: "justify" } }} // font size of input text
               />
             }
             button={
@@ -288,6 +325,7 @@ function Poll(props) {
                   value={newOptionText}
                   onChange={(event) => setNewOptionText(event.target.value)}
                   autoFocus={true}
+                  inputProps={{ style: { fontSize: 14, textAlign: "justify" } }} // font size of input text
                 />
               }
               button={
@@ -311,7 +349,7 @@ function Poll(props) {
   function previewer() {
     return (
       <>
-        <Typography className={styles.row} variant="subtitle1">
+        <Typography className={styles.row} variant="body2" align="justify">
           {poll.description}
         </Typography>
         <RadioGroup
@@ -333,8 +371,16 @@ function Poll(props) {
                 <FormControlLabel
                   className={styles.opts}
                   value={option.description}
-                  control={<Radio />}
-                  label={option.description}
+                  control={<Radio size="small" />}
+                  label={
+                    <Typography
+                      variant="body2"
+                      align="justify"
+                      className={styles.description}
+                    >
+                      {option.description}
+                    </Typography>
+                  }
                 />
               </ListItem>
             ))}
@@ -351,6 +397,7 @@ function Poll(props) {
         first={previewButton()}
         second={
           <>
+            {nusOnlySwitch()}
             <ButtonGroup>
               {saveButton()}
               {submitButton()}

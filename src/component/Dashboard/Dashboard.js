@@ -28,7 +28,7 @@ function GridRectangle(props) {
   return (
     <Grid item xs={12} sm={6}>
       <Card elevation={2} className={styles.rectangle}>
-        <Typography variant="h5">{props.title}</Typography>
+        <Typography variant="h6">{props.title}</Typography>
         {props.children}
       </Card>
     </Grid>
@@ -59,7 +59,9 @@ function Dashboard() {
             setOpen(true);
           }}
         >
-          <Typography variant="body2">{props.poll.description}</Typography>
+          <Typography variant="body2" align="justify">
+            {props.poll.description}
+          </Typography>
         </ListItem>
       </>
     );
@@ -189,7 +191,7 @@ function Dashboard() {
                   component={Link}
                   to={"/Drafts"}
                 >
-                  <Typography variant="body2">
+                  <Typography variant="body2" align="justify">
                     You have not submitted any polls, try submitting one under
                     Drafts!
                   </Typography>
@@ -243,9 +245,9 @@ function Dashboard() {
                 component={Link}
                 to={"/Drafts"}
               >
-                <Typography variant="body2">
-                  No one has posted any polls. You can post one now under
-                  Drafts!
+                <Typography variant="body2" align="justify">
+                  No one has posted any polls or there are no responses yet. You
+                  can post a poll now under Drafts!
                 </Typography>
               </ListItem>
             ) : (
@@ -260,7 +262,7 @@ function Dashboard() {
                   setOpen(true);
                 }}
               >
-                <Typography variant="body2">
+                <Typography variant="body2" align="justify">
                   {didYouKnow(randomPoll)}
                 </Typography>
               </ListItem>
@@ -274,6 +276,7 @@ function Dashboard() {
         open={open}
         fullWidth
         maxWidth={"md"}
+        classes={{ paper: styles.dialog }}
       >
         <PollWrapper poll={poll} />
       </Dialog>

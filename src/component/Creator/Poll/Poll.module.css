@@ -1,17 +1,3 @@
-.field {
-  width: 100%;
-  padding-bottom: 1rem;
-}
-
-.row {
-  width: 100% !important;
-  height: 3rem;
-}
-
-.fcl {
-  width: 100% !important;
-}
-
 .wrapper {
   padding: 1rem;
   width: 100%;
@@ -41,8 +27,10 @@
   padding-left: 16px !important;
   margin-right: -16px !important;
   padding-right: -16px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
-.adorn {
-  padding-bottom: 0.5rem;
+.description {
+  padding-right: 32px;
 }

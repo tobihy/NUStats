@@ -66,10 +66,10 @@ export function BottomNav() {
           <BottomNavigationAction
             key={mItem.id}
             component={Link}
-            to={"/" + mItem.id.replace(/ /g, "")}
+            to={"/" + mItem.id}
             label={mItem.id}
             icon={mItem.icon}
-            value={mItem.id.replace(/ /g, "")}
+            value={mItem.id}
           />
         ))}
       </BottomNavigation>
@@ -210,9 +210,9 @@ function NavBar(props) {
               button
               key={mItem.id}
               component={Link}
-              to={"/" + mItem.id.replace(/ /g, "")}
+              to={"/" + mItem.id}
               onClick={toggleDrawer}
-              selected={location === mItem.id.replace(/ /g, "")}
+              selected={location === mItem.id}
             >
               <ListItemIcon>{mItem.icon}</ListItemIcon>
               <ListItemText primary={mItem.id} />

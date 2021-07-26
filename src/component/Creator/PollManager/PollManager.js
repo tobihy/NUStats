@@ -51,6 +51,7 @@ export default function PollManager() {
       description: description,
       options: [],
       updated: Date.now(),
+      nusOnly: false,
     };
     snackBar("Poll successfully added!");
     fsAddPoll(newPoll, polls, setPolls);
@@ -83,7 +84,7 @@ export default function PollManager() {
         spacing={3}
       >
         <Grid item xs={12}>
-          <Typography variant="h5" align="center">
+          <Typography variant="h6" align="center">
             Drafts
           </Typography>
         </Grid>
@@ -98,15 +99,19 @@ export default function PollManager() {
                     placeholder="Poll"
                     value={newDescription}
                     onChange={(event) => setNewDescription(event.target.value)}
+                    inputProps={{
+                      style: { fontSize: 14, textAlign: "justify" },
+                    }}
                   />
                 }
                 button={
                   <Button
-                    className={styles.button}
+                    className={styles.addButton}
                     size="small"
                     type="submit"
                     variant="contained"
                     color="primary"
+                    classes={{ root: styles.addButton }}
                   >
                     Add
                   </Button>

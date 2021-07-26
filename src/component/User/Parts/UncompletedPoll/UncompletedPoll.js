@@ -35,52 +35,77 @@ function UncompletedPoll(props) {
 
   return (
     <>
-      <form onSubmit={handleSetSubmittedPolls}>
-        <RadioGroup
-          aria-label={poll.description}
-          name={poll.description}
-          value={value}
-          onChange={handleChange}
-          className={styles.opts}
-        >
-          <List disablePadding dense>
-            {poll.options.map((option, index) => (
-              <ListItem
-                key={option.id}
-                className={styles.removeGutter}
-                button
-                dense
-                disableRipple
-                disableTouchRipple
-              >
-                <FormControlLabel
-                  className={styles.opts}
-                  value={option.description}
-                  control={<Radio />}
-                  label={
-                    <Typography variant="body2">
-                      {option.description}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            ))}
-          </List>
-        </RadioGroup>
-        {value && (
-          <div className={styles.button}>
-            <Button
-              type="submit"
-              size="small"
-              variant="contained"
-              color="primary"
-              endIcon={<DoneIcon />}
+      {poll.nusOnly && !poll.userFromNUS ? (
+        <List dense disablePadding>
+          {poll.options.map((option, index) => (
+            <ListItem
+              key={option.id}
+              disableRipple
+              disableTouchRipple
+              disableGutters
             >
-              Submit Response
-            </Button>
-          </div>
-        )}
-      </form>
+              <Typography
+                variant="body2"
+                align="justify"
+                className={styles.descriptionNonNUS}
+              >
+                {option.description}
+              </Typography>
+            </ListItem>
+          ))}{" "}
+        </List>
+      ) : (
+        <form onSubmit={handleSetSubmittedPolls}>
+          <RadioGroup
+            aria-label={poll.description}
+            name={poll.description}
+            value={value}
+            onChange={handleChange}
+            className={styles.opts}
+          >
+            <List disablePadding dense>
+              {poll.options.map((option, index) => (
+                <ListItem
+                  key={option.id}
+                  className={styles.removeGutter}
+                  button
+                  dense
+                  disableRipple
+                  disableTouchRipple
+                >
+                  <FormControlLabel
+                    className={styles.opts}
+                    value={option.description}
+                    control={<Radio size="small" />}
+                    label={
+                      <Typography
+                        variant="body2"
+                        align="justify"
+                        className={styles.description}
+                      >
+                        {option.description}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </RadioGroup>
+          {value && (
+            <div className={styles.button}>
+              <Button
+                type="submit"
+                size="small"
+                variant="contained"
+                color="primary"
+                endIcon={<DoneIcon />}
+              >
+                Submit Response
+              </Button>
+            </div>
+          )}
+        </form>
+      )}
     </>
   );
 }

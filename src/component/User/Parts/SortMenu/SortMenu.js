@@ -5,18 +5,30 @@ import ListItemText from "@material-ui/core/ListItemText";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 
-const options = [
-  "Latest",
-  "Oldest",
-  "Highest Poll Count",
-  "Lowest Poll Count",
-  "A to Z",
-  "Z to A",
-];
-
 export default function SortMenu(props) {
-  const { selectedIndex, setSelectedIndex } = props;
+  const { selectedIndex, setSelectedIndex, filter } = props;
   const [anchorEl, setAnchorEl] = useState();
+
+  const sortItems = [
+    "Latest",
+    "Oldest",
+    "Most Polled",
+    "Least Polled",
+    "Most Liked",
+    "Least Liked",
+    "A to Z",
+    "Z to A",
+  ];
+
+  const filterItems = [
+    "Followed",
+    "All Polls",
+    "NUS Only",
+    "Completed",
+    "Incompleted",
+  ];
+
+  const options = filter ? filterItems : sortItems;
 
   const handleClickListItem = (event) => {
     event.preventDefault();
@@ -41,7 +53,10 @@ export default function SortMenu(props) {
     <div>
       <List component="nav">
         <ListItem button onClick={handleClickListItem}>
-          <ListItemText primary="Sort via" secondary={options[selectedIndex]} />
+          <ListItemText
+            primary={filter ? "Filter via" : "Sort via"}
+            secondary={options[selectedIndex]}
+          />
         </ListItem>
       </List>
       <Menu

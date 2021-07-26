@@ -17,6 +17,8 @@ async function fsSubmitPoll(p) {
       submissionTime: firebase.firestore.FieldValue.serverTimestamp(),
       responses: [],
       uids: [],
+      likes: [],
+      likesCount: 0,
     })
     .then((docRef) => {})
     .catch((error) =>

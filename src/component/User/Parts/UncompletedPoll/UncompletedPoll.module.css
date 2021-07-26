@@ -9,9 +9,19 @@
   padding-left: 16px !important;
   margin-right: -16px !important;
   padding-right: 16px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 }
 
 .button {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+.description {
+  padding-right: 16px;
+}
+
+.descriptionNonNUS {
+  padding-right: 0px;
 }

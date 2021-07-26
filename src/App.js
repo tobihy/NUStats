@@ -55,6 +55,7 @@ function AppBody() {
 
   const dark = createMuiTheme({
     typography: {
+      fontSize: 14,
       fontFamily: [
         '"Poppins"',
         "Arial",
@@ -148,6 +149,8 @@ function AppBody() {
             />
             <Route exact path="/Users" render={() => <Users />} />
             <Route exact path="/Users/:userId" render={() => <ProfilePage />} />
+            <Route exact path="/Users/:userId/:type" render={() => <Users />} />
+            <Route exact path="/Profile/:type" render={() => <Users />} />
           </Switch>
         </Switch>
       </Container>

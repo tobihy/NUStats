@@ -54,6 +54,7 @@ const fsUpdatePoll = (poll) => {
       description: poll.description,
       options: poll.options,
       updated: firebase.firestore.FieldValue.serverTimestamp(),
+      nusOnly: poll.nusOnly,
     })
     .catch((error) => {
       console.error("Error updating poll " + JSON.stringify(poll) + " ", error);

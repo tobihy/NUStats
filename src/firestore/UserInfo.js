@@ -37,6 +37,7 @@ export const initialiseUser = (uid, email) => {
     username: defaultUsername,
     email: email,
     monthArr: initArr,
+    followings: [],
   });
 
   console.log("user initialized");
