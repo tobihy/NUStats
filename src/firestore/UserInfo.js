@@ -43,23 +43,6 @@ export const initialiseUser = (uid, email) => {
   console.log("user initialized");
 };
 
-export function userExists(email) {
-  firebase
-    .firestore()
-    .collection("emails")
-    .doc(email)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        console.log("user already exists");
-        return true;
-      } else {
-        console.log("user does not exist");
-        return false;
-      }
-    });
-}
-
 export default function updateSubmitCount(uid) {
   const userInfoRef = firebase.firestore().collection("userInfo").doc(uid);
   userInfoRef.get().then((doc) => {
