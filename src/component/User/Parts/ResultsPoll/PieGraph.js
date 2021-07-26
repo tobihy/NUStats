@@ -3,11 +3,19 @@ import { ResponsiveContainer, PieChart, Pie, Tooltip, Cell } from "recharts";
 import styles from "./ResultsPoll.module.css";
 import { Paper, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
+import { interpolateRainbow } from "d3-scale-chromatic";
 
 function PieGraph(props) {
-  const filteredData = props.data.filter(
-    (entry) => entry["Number of Responses"] !== 0
-  );
+  const filteredData = props.data
+    .map((entry, index) =>
+      index === props.optionId
+        ? {
+            name: "✓ " + entry.name,
+            "Number of Responses": entry["Number of Responses"],
+          }
+        : entry
+    )
+    .filter((entry) => entry["Number of Responses"] !== 0);
   const theme = useTheme();
   const label = ({
     cx,
@@ -74,23 +82,11 @@ function PieGraph(props) {
           {filteredData.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={
-                props.completed && entry === props.data[props.optionId]
-                  ? theme.palette.primary.dark
-                  : theme.palette.primary.light
-              }
+              fill={interpolateRainbow(index / filteredData.length)}
             />
           ))}
         </Pie>
-        <Tooltip
-          // contentStyle={{
-          //   color: theme.palette.text.primary,
-          //   backgroundColor: theme.palette.background.paper,
-          // }}
-          // itemStyle={{ color: theme.palette.text.primary }}
-          // cursor={{ fill: theme.palette.background.paper }}
-          content={CustomTooltip}
-        />
+        <Tooltip content={CustomTooltip} />
       </PieChart>
     </ResponsiveContainer>
   );

@@ -12,6 +12,7 @@ export default function PollManager() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [polls, setPolls] = useState([]);
+  const [editing, setEditing] = useState(0);
   const [newDescription, setNewDescription] = useState("");
 
   function snackBar(message) {
@@ -45,6 +46,7 @@ export default function PollManager() {
   function handleAddPoll(event) {
     event.preventDefault();
     addPoll(newDescription);
+    setEditing(0);
     setNewDescription("");
   }
 
@@ -64,6 +66,8 @@ export default function PollManager() {
       <Grid item xs={12} key={index}>
         <Rectangle className={styles.rectangle}>
           <Poll
+            editing={editing}
+            setEditing={setEditing}
             polls={polls}
             poll={poll}
             index={index}

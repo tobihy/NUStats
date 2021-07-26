@@ -23,10 +23,9 @@ import { fsSubmitPoll } from "../../../firestore/SubmittedPoll";
 import SaveIcon from "@material-ui/icons/Save";
 
 function Poll(props) {
-  const { index, poll, polls, setPolls, snackBar } = props;
+  const { index, poll, polls, setPolls, snackBar, editing, setEditing } = props;
   const [question, setQuestion] = useState(poll.description);
   const [options, setOptions] = useState(poll.options);
-  const [newOptionText, setNewOptionText] = useState("");
   const [optionToDelete, setOptionToDelete] = useState();
   const [preview, setPreview] = useState(false);
   const [nusOnly, setNusOnly] = useState(poll.nusOnly);
@@ -88,7 +87,11 @@ function Poll(props) {
         size="small"
         color="primary"
         variant="contained"
-        disabled={!validation(question)}
+        disabled={
+          options.length > 20 ||
+          question.length > 200 ||
+          options.filter((opt) => opt.description.length > 50).length > 0
+        }
         onClick={() => {
           fsUpdatePoll(poll);
           snackBar("Poll saved!");
@@ -158,6 +161,7 @@ function Poll(props) {
   function handleEditPoll(event, qns) {
     event.preventDefault();
     setQuestion(qns);
+    setEditing(index);
     editPoll(qns, options, nusOnly);
   }
 
@@ -177,11 +181,10 @@ function Poll(props) {
       ...options,
       {
         id: options.length,
-        description: newOptionText,
+        description: "",
       },
     ];
     setOptions(newOptions);
-    setNewOptionText("");
     editPoll(question, newOptions, nusOnly);
   }
 
@@ -285,6 +288,9 @@ function Poll(props) {
                     description: event.target.value,
                   });
                 }}
+                autoFocus={
+                  editing === index && option.id === options.length - 1
+                }
                 inputProps={{ style: { fontSize: 14 } }} // font size of input text
               />
             }
@@ -321,9 +327,11 @@ function Poll(props) {
                   size="small"
                   placeholder="Add Option"
                   fullWidth
-                  value={newOptionText}
-                  onChange={(event) => setNewOptionText(event.target.value)}
-                  autoFocus={true}
+                  value={""}
+                  onClick={(event) => {
+                    setEditing(index);
+                    handleAddOption(event);
+                  }}
                   inputProps={{ style: { fontSize: 14 } }} // font size of input text
                 />
               }

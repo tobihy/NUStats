@@ -25,7 +25,7 @@ export default function SortMenu(props) {
     "All Polls",
     "NUS Only",
     "Completed",
-    "Incompleted",
+    "Uncompleted",
   ];
 
   const options = filter ? filterItems : sortItems;

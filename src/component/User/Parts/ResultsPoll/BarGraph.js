@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { Paper, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
+import { interpolateRainbow } from "d3-scale-chromatic";
 
 let ctx;
 
@@ -27,10 +28,20 @@ const BAR_AXIS_SPACE = 10;
 
 function BarGraph(props) {
   const theme = useTheme();
-  const { data, xKey, yKey, total, completed, optionId } = props;
+  const { data, xKey, yKey, total, optionId } = props;
+
+  const filteredData = props.data.map((entry, index) =>
+    index === optionId
+      ? {
+          name: "✓ " + entry.name,
+          "Number of Responses": entry["Number of Responses"],
+        }
+      : entry
+  );
+
   const maxTextWidth = useMemo(
     () =>
-      data.reduce((acc, cur) => {
+      filteredData.reduce((acc, cur) => {
         const value = cur[yKey];
         const width = measureText14HelveticaNeue(
           value + " (" + ((value / total) * 100).toFixed(2) + "%)"
@@ -40,7 +51,7 @@ function BarGraph(props) {
         }
         return acc;
       }, 0),
-    [data, yKey, total]
+    [filteredData, yKey, total]
   );
 
   const renderCustomizedLabel = (props) => {
@@ -75,7 +86,7 @@ function BarGraph(props) {
   return (
     <ResponsiveContainer height={50 * data.length} width="95%">
       <BarChart
-        data={data}
+        data={filteredData}
         layout="vertical"
         margin={{ left: 10, right: maxTextWidth + (BAR_AXIS_SPACE - 8) }}
       >
@@ -113,15 +124,11 @@ function BarGraph(props) {
           cursor={{ fill: theme.palette.background.paper }}
         />
         <Bar dataKey={yKey} minPointSize={2} barSize={32}>
-          {data.map((d, idx) => {
+          {filteredData.map((d, idx) => {
             return (
               <Cell
                 key={d[xKey]}
-                fill={
-                  completed && idx === optionId
-                    ? theme.palette.primary.dark
-                    : theme.palette.primary.light
-                }
+                fill={interpolateRainbow(idx / filteredData.length)}
               />
             );
           })}
