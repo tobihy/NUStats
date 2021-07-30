@@ -11,7 +11,7 @@ import {
 } from "recharts";
 import { Paper, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
-import { interpolateRainbow } from "d3-scale-chromatic";
+import { interpolateWarm } from "d3-scale-chromatic";
 
 let ctx;
 
@@ -128,7 +128,7 @@ function BarGraph(props) {
             return (
               <Cell
                 key={d[xKey]}
-                fill={interpolateRainbow(idx / filteredData.length)}
+                fill={interpolateWarm(idx / (2 * filteredData.length))}
               />
             );
           })}

@@ -22,7 +22,16 @@ const fsSubmitResponse = (pollId, optionId) => {
   submittedPollsRef
     .update(data)
     .then(() => {})
-    .catch((error) => console.error("Error incrementing poll count"));
+    .catch((error) =>
+      console.error(
+        "Error incrementing poll count",
+        uid,
+        " ",
+        pollId,
+        " ",
+        optionId
+      )
+    );
 
   const userRef = firebase.firestore().collection("userInfo").doc(uid);
 

@@ -77,10 +77,7 @@ function ProfilePage(props) {
           ? filtered.orderBy("pollCount", selectedIndex === 2 ? "desc" : "asc")
           : selectedIndex < 6
           ? filtered.orderBy("likesCount", selectedIndex === 4 ? "desc" : "asc")
-          : filtered.orderBy(
-              "description",
-              selectedIndex === 6 ? "asc" : "desc"
-            );
+          : filtered.orderBy("searchQns", selectedIndex === 6 ? "asc" : "desc");
 
       sorted.get().then((querySnapshot) => {
         const tempDocs = [];

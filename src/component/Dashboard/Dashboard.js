@@ -43,6 +43,45 @@ function Dashboard() {
   const [open, setOpen] = useState(false);
   const [randomPoll, setMyRandomPoll] = useState();
 
+  function handleSetPoll(pollId) {
+    const uid = firebase.auth().currentUser?.uid;
+    const userFromNUS = firebase
+      .auth()
+      .currentUser?.email.split("@")[1]
+      .includes("nus.edu");
+
+    const fsPollRef = firebase
+      .firestore()
+      .collection("draftSubmittedPolls")
+      .doc(pollId);
+
+    fsPollRef
+      .get()
+      .then((pollRef) => {
+        const { responses, uids, ...otherProps } = pollRef.data();
+        const filteredResponse = responses.filter(
+          (response) => response.uid === uid
+        );
+        if (filteredResponse.length === 0) {
+          setPoll({
+            id: pollRef.id,
+            ...otherProps,
+            completed: false,
+            userFromNUS: userFromNUS,
+          });
+        } else {
+          setPoll({
+            id: pollRef.id,
+            ...otherProps,
+            completed: true,
+            optionId: filteredResponse.pop().optionId,
+            userFromNUS: userFromNUS,
+          });
+        }
+      })
+      .then(() => setOpen(true));
+  }
+
   function GridRow(props) {
     return (
       <>
@@ -54,10 +93,7 @@ function Dashboard() {
           divider={props.index < props.length - 1}
           button
           className={styles.cursor}
-          onClick={() => {
-            setPoll(props.poll);
-            setOpen(true);
-          }}
+          onClick={() => handleSetPoll(props.poll.id)}
         >
           <Typography variant="body2" align="justify">
             {props.poll.description}
@@ -78,9 +114,12 @@ function Dashboard() {
       .get()
       .then((querySnapshot) => {
         const tempDocs = [];
-        querySnapshot.forEach((pollRef) => {
-          tempDocs.push(pollRef.data());
-        });
+        querySnapshot.forEach((pollRef) =>
+          tempDocs.push({
+            id: pollRef.id,
+            description: pollRef.data().description,
+          })
+        );
         setSubmittedPolls(tempDocs);
       });
 
@@ -94,9 +133,12 @@ function Dashboard() {
 
       snapShot.then((querySnapshot) => {
         const tempDocs = [];
-        querySnapshot.forEach((pollRef) => {
-          tempDocs.push(pollRef.data());
-        });
+        querySnapshot.forEach((pollRef) =>
+          tempDocs.push({
+            id: pollRef.id,
+            description: pollRef.data().description,
+          })
+        );
         setMySubmittedPolls(tempDocs);
       });
     }
@@ -114,17 +156,21 @@ function Dashboard() {
           submittedPollsRef
             .doc(pollIds[random])
             .get()
-            .then((pollSnapshot) => {
-              const tempPoll = pollSnapshot.data();
+            .then((pollRef) => {
+              const tempPoll = {
+                id: pollRef.id,
+                description: pollRef.data().description,
+              };
               const randomOption = Math.floor(
-                Math.random() * tempPoll.options.length
+                Math.random() * pollRef.data().options.length
               );
               setMyRandomPoll({
                 poll: tempPoll,
-                description: tempPoll.description,
-                pollCount: tempPoll.pollCount,
-                optionCount: tempPoll.optionCounts[randomOption],
-                optionDescription: tempPoll.options[randomOption].description,
+                description: pollRef.data().description,
+                pollCount: pollRef.data().pollCount,
+                optionCount: pollRef.data().optionCounts[randomOption],
+                optionDescription:
+                  pollRef.data().options[randomOption].description,
               });
             });
       });
@@ -134,6 +180,7 @@ function Dashboard() {
 
   useEffect(() => {
     const user = firebase.auth().currentUser?.uid;
+
     firebase
       .firestore()
       .collection("userInfo")
@@ -255,10 +302,7 @@ function Dashboard() {
                 dense
                 button
                 className={styles.cursor}
-                onClick={() => {
-                  setPoll(randomPoll.poll);
-                  setOpen(true);
-                }}
+                onClick={() => handleSetPoll(randomPoll.poll.id)}
               >
                 <Typography variant="body2" align="justify">
                   {didYouKnow(randomPoll)}

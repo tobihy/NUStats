@@ -19,6 +19,7 @@ async function fsSubmitPoll(p) {
       uids: [],
       likes: [],
       likesCount: 0,
+      searchQns: p.description.toLowerCase(),
     })
     .then((docRef) => {})
     .catch((error) =>

@@ -3,7 +3,7 @@ import { ResponsiveContainer, PieChart, Pie, Tooltip, Cell } from "recharts";
 import styles from "./ResultsPoll.module.css";
 import { Paper, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
-import { interpolateRainbow } from "d3-scale-chromatic";
+import { interpolateWarm } from "d3-scale-chromatic";
 
 function PieGraph(props) {
   const filteredData = props.data
@@ -82,7 +82,7 @@ function PieGraph(props) {
           {filteredData.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={interpolateRainbow(index / filteredData.length)}
+              fill={interpolateWarm(index / (2 * filteredData.length))}
             />
           ))}
         </Pie>
